@@ -3,6 +3,7 @@ package com.hhdplus.concert_service.business.service;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.repository.QueueRepository;
+import com.hhdplus.concert_service.infrastructure.entity.Queue;
 import com.hhdplus.concert_service.interfaces.common.exception.InvalidReqBodyException;
 import com.hhdplus.concert_service.interfaces.dto.request.QueueRequestDto;
 import org.slf4j.Logger;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class QueueService {
@@ -35,7 +38,7 @@ public class QueueService {
 
         queue.create();
 
-        try{
+        try {
             return queueRepository.save(queue);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -52,11 +55,23 @@ public class QueueService {
     }
 
     public QueueDomain getActiveUserCount(QueueDomain queue) {
-        QueueDomain.builder()
-                .queueCount((long)queueRepository.findActiveQueues(queue.getNo()).size())
-                .build();
+        List<QueueDomain> activeQueues = queueRepository.findActiveQueues(queue.getNo());
 
-        return queue;
+        Long activeCount = (long) activeQueues.size();
+
+        return QueueDomain.builder()
+                .queueCount(activeCount)
+                .build();
+    }
+
+    public QueueDomain getActiveUserCount() {
+        List<QueueDomain> activeQueues = queueRepository.findActiveQueues();
+
+        Long activeCount = (long) activeQueues.size();
+
+        return QueueDomain.builder()
+                .queueCount(activeCount)
+                .build();
     }
 
     public boolean checkQueue(QueueDomain queue) {
@@ -72,5 +87,27 @@ public class QueueService {
             .build();
 
         return queueRepository.save(queue);
+    }
+
+    public QueueDomain getWaitingUserCountBeforeMe(QueueDomain queue) {
+        List<QueueDomain> waitingQueues = queueRepository.findWaitingQueuesBeforeMe(queue.getNo());
+        long waitingUserCountBeforeMe = waitingQueues.size();
+
+        return QueueDomain.builder()
+                .no(queue.getNo())
+                .queueCount(waitingUserCountBeforeMe)
+                .build();
+    }
+
+    public List<QueueDomain> getWaitingUserCountToActive(Long availableCount) {
+        return queueRepository.findWaitingUserCountToActive(availableCount);
+    }
+
+    public List<QueueDomain> getActiveQueues() {
+        return queueRepository.findActiveQueues();
+    }
+
+    public void deleteQueue(String token) {
+        queueRepository.deleteById(token);
     }
 }

@@ -2,11 +2,13 @@ package com.hhdplus.concert_service.business.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Builder
 public class QueueDomain {
     private static final int MAX_ACTIVE_USERS = 100;

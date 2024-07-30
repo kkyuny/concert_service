@@ -11,6 +11,4 @@ import lombok.*;
 public class ChargeRequestDto {
     private Long userId;
     private Long amount;
-
-
 }

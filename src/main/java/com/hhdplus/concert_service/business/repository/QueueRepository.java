@@ -1,6 +1,7 @@
 package com.hhdplus.concert_service.business.repository;
 
 import com.hhdplus.concert_service.business.domain.QueueDomain;
+import com.hhdplus.concert_service.infrastructure.entity.Queue;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,4 +13,12 @@ public interface QueueRepository {
     Optional<QueueDomain> findById(String token);
 
     List<QueueDomain> findActiveQueues(Long no);
+
+    List<QueueDomain> findActiveQueues();
+
+    List<QueueDomain> findWaitingQueuesBeforeMe(Long no);
+
+    List<QueueDomain> findWaitingUserCountToActive(Long availableCount);
+
+    void deleteById(String token);
 }

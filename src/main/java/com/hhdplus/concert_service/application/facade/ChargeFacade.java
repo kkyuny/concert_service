@@ -14,28 +14,25 @@ public class ChargeFacade {
 
     public ChargeFacadeDto getUserAmount(ChargeFacadeDto dto) {
         UserDomain user = userService.findUserById(dto.getUserId());
-        ChargeFacadeDto.builder()
-            .amount(user.getAmount());
-
-        return dto;
+        return ChargeFacadeDto.builder()
+            .amount(user.getAmount())
+            .build();
     }
 
 
     public ChargeFacadeDto chargeUserAmount(ChargeFacadeDto dto) {
         UserDomain user = userService.findUserById(dto.getUserId());
 
-        ChargeFacadeDto.builder()
-            .amount(userService.chargeAmountUser(user, dto.getAmount()).getAmount());
-
-        return dto;
+        return ChargeFacadeDto.builder()
+            .amount(userService.chargeAmountUser(user, dto.getAmount()).getAmount())
+            .build();
     }
 
     public ChargeFacadeDto useUserAmount(ChargeFacadeDto dto) {
         UserDomain user = userService.findUserById(dto.getUserId());
 
-        ChargeFacadeDto.builder()
-            .amount(userService.useAmountUser(user, dto.getAmount()).getAmount());
-
-        return dto;
+        return ChargeFacadeDto.builder()
+            .amount(userService.useAmountUser(user, dto.getAmount()).getAmount())
+            .build();
     }
 }

@@ -15,13 +15,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class QueueServiceTest {
@@ -88,5 +90,91 @@ public class QueueServiceTest {
         assertThatThrownBy(() -> queueService.findTokenById(token))
                 .isInstanceOf(InvalidReqBodyException.class)
                 .hasMessage("INVALID_TOKEN");
+    }
+
+    @Test
+    @DisplayName("active 유저 조회 테스트")
+    void getQueueOrder() {
+        //given
+        long userId = 1L;
+        String token = "token";
+
+        List<QueueDomain> activeQueues = Arrays.asList(
+                QueueDomain.builder().no(1L).status("active").build(),
+                QueueDomain.builder().no(2L).status("active").build(),
+                // QueueDomain.builder().no(3L).status("waiting").build(),
+                QueueDomain.builder().no(4L).status("active").build(),
+                QueueDomain.builder().no(5L).status("active").build(),
+                QueueDomain.builder().no(6L).status("active").build()
+
+        );
+
+        QueueDomain queueDomain = QueueDomain.builder().no(7L).build();
+
+        when(queueRepository.findActiveQueues(queueDomain.getNo())).thenReturn(activeQueues);
+
+        // when
+        QueueDomain result = queueService.getActiveUserCount(queueDomain);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getQueueCount()).isEqualTo(5L); // 활성 유저 수
+    }
+
+    @Test
+    @DisplayName("대기 유저 수 조회 테스트 (나보다 앞서 있는 대기 유저 수)")
+    void getWaitingUserCountBeforeMeTest() {
+        // given
+        List<QueueDomain> waitingQueues = Arrays.asList(
+                QueueDomain.builder().no(1L).status("waiting").build(),
+                QueueDomain.builder().no(2L).status("waiting").build(),
+                QueueDomain.builder().no(3L).status("waiting").build(),
+                QueueDomain.builder().no(4L).status("waiting").build()
+        );
+
+        QueueDomain queueDomain = QueueDomain.builder().no(5L).build();
+
+        // Mock 설정
+        when(queueRepository.findWaitingQueuesBeforeMe(5L)).thenReturn(waitingQueues);
+
+        // when
+        QueueDomain result = queueService.getWaitingUserCountBeforeMe(queueDomain);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getQueueCount()).isEqualTo(4L); // 대기 유저 수
+    }
+
+    @Test
+    @DisplayName("대기 중인 유저 조회 테스트")
+    void getWaitingUserCountToActivateTest() {
+        // given
+        long availableCount = 3L;
+
+        List<QueueDomain> expectedWaitingUsers = Arrays.asList(
+                QueueDomain.builder().no(1L).status("waiting").build(),
+                QueueDomain.builder().no(2L).status("waiting").build(),
+                QueueDomain.builder().no(3L).status("waiting").build()
+        );
+        when(queueRepository.findWaitingUserCountToActive(availableCount)).thenReturn(expectedWaitingUsers);
+
+        // when
+        List<QueueDomain> actualWaitingUsers = queueService.getWaitingUserCountToActive(availableCount);
+
+        // then
+        assertThat(actualWaitingUsers.size()).isEqualTo(expectedWaitingUsers.size());
+    }
+
+    @Test
+    @DisplayName("토큰 만료 테스트")
+    void deleteQueue_ShouldCallDeleteById() {
+        // Given
+        String token = "test-token";
+
+        // When
+        queueService.deleteQueue(token);
+
+        // Then
+        verify(queueRepository, times(1)).deleteById(token);
     }
 }
