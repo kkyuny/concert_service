@@ -28,4 +28,6 @@ public class QueueController {
     public QueueResponseDto checkQueue(@RequestBody QueueRequestDto dto) {
         return QueueResponseDto.toResponse(queueFacade.checkQueue(QueueFacadeDto.toFacadeDto(dto)));
     }
+
+    // 대기 숫자 조회
 }

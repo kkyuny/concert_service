@@ -110,4 +110,8 @@ public class QueueService {
     public void deleteQueue(String token) {
         queueRepository.deleteById(token);
     }
+
+    public QueueDomain findTokenByUserId(Long userId) {
+        return queueRepository.findTokenByUserId(userId);
+    }
 }

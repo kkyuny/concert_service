@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -15,10 +16,11 @@ public class ConcertFacadeDto {
     private Long concertId;
     private String title;
     private Long price;
-    private LocalDate concertDate;
+    private LocalDateTime concertDate;
     private String status;
     private Long seatNo;
-    private List<LocalDate> availableDates;
+    private Long userId;
+    private List<LocalDateTime> availableDates;
     private List<Long> availableSeats;
 
     public static ConcertFacadeDto toFacadeDto(ConcertRequestDto dto) {
@@ -28,6 +30,7 @@ public class ConcertFacadeDto {
                 .price(dto.getPrice())
                 .seatNo(dto.getSeatNo())
                 .status(dto.getStatus())
+                .userId(dto.getUserId())
                 .concertDate(dto.getConcertDate())
                 .build();
     }

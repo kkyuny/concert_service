@@ -24,6 +24,7 @@ public class Queue {
     private String token;
     private String status;
     private LocalDateTime validDate;
+    private LocalDateTime regiDate;
 
     public static QueueDomain toDomain(Queue entity) {
         return QueueDomain.builder()

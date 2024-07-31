@@ -14,6 +14,7 @@ public class ChargeFacade {
 
     public ChargeFacadeDto getUserAmount(ChargeFacadeDto dto) {
         UserDomain user = userService.findUserById(dto.getUserId());
+
         return ChargeFacadeDto.builder()
             .amount(user.getAmount())
             .build();

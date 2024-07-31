@@ -67,4 +67,9 @@ public class QueueRepositoryImpl implements QueueRepository {
     public void deleteById(String token) {
         jpaRepository.deleteById(token);
     }
+
+    @Override
+    public QueueDomain findTokenByUserId(Long userId) {
+        return jpaRepository.findTokenByUserId(userId);
+    }
 }

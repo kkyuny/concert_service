@@ -66,7 +66,6 @@ public class QueueServiceTest {
                 .build();
         queueDomain.create();
 
-        // `findById` 메서드 호출 시 `queueDomain` 반환하도록 설정
         when(queueRepository.findById(queueDomain.getToken())).thenReturn(Optional.of(queueDomain));
 
         // when
@@ -117,7 +116,6 @@ public class QueueServiceTest {
         QueueDomain result = queueService.getActiveUserCount(queueDomain);
 
         // then
-        Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getQueueCount()).isEqualTo(5L); // 활성 유저 수
     }
 

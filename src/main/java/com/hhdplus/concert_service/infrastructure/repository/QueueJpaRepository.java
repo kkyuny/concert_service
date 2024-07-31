@@ -1,5 +1,6 @@
 package com.hhdplus.concert_service.infrastructure.repository;
 
+import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.infrastructure.entity.Queue;
 import com.hhdplus.concert_service.infrastructure.entity.User;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,7 @@ public interface QueueJpaRepository extends JpaRepository<Queue, String> {
 
     @Query("SELECT q FROM Queue q WHERE q.status = 'waiting' ORDER BY q.no ASC")
     List<Queue> findWaitingUserCountToActive(Pageable pageable);
+
+    @Query("SELECT q FROM Queue q WHERE q.userId = :userId")
+    QueueDomain findTokenByUserId(@Param("userId") Long userId);
 }

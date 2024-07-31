@@ -19,13 +19,13 @@ public class UserDomain {
         this.amount += amount;
     }
 
-    public void usePoint(long amount) {
-        if (amount <= 0)
+    public void usePoint(long price) {
+        if (price <= 0)
             throw new InvalidReqBodyException("INVALID POINT VALUE");
 
-        if (this.amount < amount)
+        if (this.amount < price)
             throw new InvalidReqBodyException("NOT ENOUGH USE AMOUNT");
 
-        this.amount -= amount;
+        this.amount -= price;
     }
 }

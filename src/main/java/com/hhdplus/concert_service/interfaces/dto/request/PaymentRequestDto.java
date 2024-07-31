@@ -1,8 +1,8 @@
 package com.hhdplus.concert_service.interfaces.dto.request;
 
+import com.hhdplus.concert_service.application.dto.PaymentFacadeDto;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -10,12 +10,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ConcertRequestDto {
+public class PaymentRequestDto {
+    private Long userId;
     private Long concertId;
-    private String title;
     private LocalDateTime concertDate;
-    private String status;
     private Long seatNo;
     private Long price;
-    private Long userId;
 }

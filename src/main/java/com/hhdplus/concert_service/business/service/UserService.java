@@ -27,8 +27,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserDomain useAmountUser(UserDomain user, Long amount) {
-        user.usePoint(amount);
+    public UserDomain useAmountUser(UserDomain user, Long price) {
+        user.usePoint(price);
 
         return userRepository.save(user);
     }
