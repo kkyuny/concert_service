@@ -12,18 +12,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface QueueJpaRepository extends JpaRepository<Queue, String> {
-    @Query("SELECT * FROM queue q WHERE q.no < :no AND q.status = 'active'")
-    List<Queue> findActiveQueues(@Param("no") Long no);
+    @Query("SELECT q FROM Queue q WHERE q.regiDate < (SELECT q2.regiDate FROM Queue q2 WHERE q2.token = :token) AND q.status = 'active'")
+    List<Queue> findActiveQueues(@Param("token") String token);
 
-    @Query("SELECT * FROM queue q WHERE q.status = 'active'")
+    @Query("SELECT q FROM Queue q WHERE q.status = 'active'")
     List<Queue> findActiveQueues();
 
-    @Query("SELECT q FROM Queue q WHERE q.no < :no AND q.status = 'waiting'")
-    List<Queue> findWaitingQueuesBeforeMe(@Param("no") Long no);
+    @Query("SELECT q FROM Queue q WHERE q.regiDate < (SELECT q2.regiDate FROM Queue q2 WHERE q2.token = :token) AND q.status = 'waiting'")
+    List<Queue> findWaitingQueuesBeforeMe(@Param("token") String token);
 
-    @Query("SELECT q FROM Queue q WHERE q.status = 'waiting' ORDER BY q.no ASC")
+    @Query("SELECT q FROM Queue q WHERE q.status = 'waiting' ORDER BY q.regiDate ASC")
     List<Queue> findWaitingUserCountToActive(Pageable pageable);
 
     @Query("SELECT q FROM Queue q WHERE q.userId = :userId")
-    QueueDomain findTokenByUserId(@Param("userId") Long userId);
+    Queue findTokenByUserId(@Param("userId") Long userId);
 }

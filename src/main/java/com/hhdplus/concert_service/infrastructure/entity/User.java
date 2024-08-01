@@ -1,10 +1,7 @@
 package com.hhdplus.concert_service.infrastructure.entity;
 
 import com.hhdplus.concert_service.business.domain.UserDomain;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -15,17 +12,18 @@ import java.util.Optional;
 @Getter
 @Setter
 @Builder
+@Table(name = "`User`")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ColumnDefault("0")
     private Long amount;
-
     private LocalDateTime regiDate;
+    @Version
+    private int version;
 
     public static UserDomain toDomain(User entity) {
         return UserDomain.builder()

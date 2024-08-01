@@ -3,10 +3,12 @@ package com.hhdplus.concert_service.application.facade;
 import com.hhdplus.concert_service.application.dto.ChargeFacadeDto;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ChargeFacade {
 
     @Autowired

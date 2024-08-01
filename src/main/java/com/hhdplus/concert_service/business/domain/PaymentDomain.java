@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class PaymentDomain {
+    private Long id;
     private Long userId;
     private Long concertId;
     private LocalDateTime concertDate;

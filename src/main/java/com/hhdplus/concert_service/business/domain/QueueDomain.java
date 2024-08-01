@@ -14,7 +14,6 @@ public class QueueDomain {
     private static final int MAX_ACTIVE_USERS = 100;
     private static final int MAX_ACTIVE_MINUTES = 5;
 
-    private Long no;
     private Long userId;
     private String status;
     private String token;

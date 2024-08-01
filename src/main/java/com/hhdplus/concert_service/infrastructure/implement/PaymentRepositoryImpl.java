@@ -4,15 +4,18 @@ import com.hhdplus.concert_service.business.domain.PaymentDomain;
 import com.hhdplus.concert_service.business.repository.PaymentRepository;
 import com.hhdplus.concert_service.infrastructure.entity.Payment;
 import com.hhdplus.concert_service.infrastructure.repository.PaymentJpaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
+@RequiredArgsConstructor
 public class PaymentRepositoryImpl implements PaymentRepository {
 
-    @Autowired
-    PaymentJpaRepository jpaRepository;
+    private final PaymentJpaRepository jpaRepository;
 
     @Override
-    public void save(PaymentDomain domain) {
-        jpaRepository.save(Payment.toEntity(domain));
+    public PaymentDomain save(PaymentDomain domain) {
+        return Payment.toDomain(jpaRepository.save(Payment.toEntity(domain)));
     }
 }

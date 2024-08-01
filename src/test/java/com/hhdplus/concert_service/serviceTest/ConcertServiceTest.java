@@ -93,6 +93,7 @@ public class ConcertServiceTest {
     }
 
     @Test
+    @DisplayName("콘서트 좌석 예약 실패 테스트")
     public void reserveSeatFailTest() {
         Long concertId = 1L;
         LocalDateTime concertDate = LocalDateTime.of(2024, 8, 31, 19, 0);

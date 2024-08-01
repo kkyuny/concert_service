@@ -3,10 +3,8 @@ package com.hhdplus.concert_service.infrastructure.implement;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.repository.QueueRepository;
 import com.hhdplus.concert_service.infrastructure.entity.Queue;
-import com.hhdplus.concert_service.infrastructure.entity.User;
 import com.hhdplus.concert_service.infrastructure.repository.QueueJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +15,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class QueueRepositoryImpl implements QueueRepository {
-
-    @Autowired
-    QueueJpaRepository jpaRepository;
+    private final QueueJpaRepository jpaRepository;
 
     @Override
     public QueueDomain save(QueueDomain queue) {
@@ -32,8 +28,8 @@ public class QueueRepositoryImpl implements QueueRepository {
     }
 
     @Override
-    public List<QueueDomain> findActiveQueues(Long no) {
-        return jpaRepository.findActiveQueues(no)
+    public List<QueueDomain> findActiveQueues(String token) {
+        return jpaRepository.findActiveQueues(token)
                 .stream()
                 .map(Queue::toDomain)
                 .collect(Collectors.toList());
@@ -48,8 +44,8 @@ public class QueueRepositoryImpl implements QueueRepository {
     }
 
     @Override
-    public List<QueueDomain> findWaitingQueuesBeforeMe(Long no) {
-        return jpaRepository.findWaitingQueuesBeforeMe(no).stream()
+    public List<QueueDomain> findWaitingQueuesBeforeMe(String token) {
+        return jpaRepository.findWaitingQueuesBeforeMe(token).stream()
                 .map(Queue::toDomain)
                 .collect(Collectors.toList());
     }
@@ -70,6 +66,6 @@ public class QueueRepositoryImpl implements QueueRepository {
 
     @Override
     public QueueDomain findTokenByUserId(Long userId) {
-        return jpaRepository.findTokenByUserId(userId);
+        return Queue.toDomain(jpaRepository.findTokenByUserId(userId));
     }
 }

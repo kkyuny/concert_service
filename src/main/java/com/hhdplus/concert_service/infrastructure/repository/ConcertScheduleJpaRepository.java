@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ConcertScheduleJpaRepository extends JpaRepository<ConcertSchedule, Long> {
-    @Query("SELECT s FROM ConcertSchedule s WHERE s.concertId = :concertId")
+    @Query("SELECT s.concertDate FROM ConcertSchedule s WHERE s.concertId = :concertId")
     List<LocalDateTime> findAvailableDatesByConcertId(@Param("concertId") Long concertId);
 }

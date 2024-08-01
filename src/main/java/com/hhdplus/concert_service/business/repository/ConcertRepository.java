@@ -14,7 +14,9 @@ public interface ConcertRepository {
 
     boolean existsByConcertIdAndDateAndSeatNo(Long concertId, LocalDateTime concertDate, Long seatNo);
 
-    void saveConcertReservation(ConcertDomain concertSeat);
+    void saveConcertReservation(ConcertDomain reservedSeat);
 
     ConcertDomain getUserReservation(Long concertId, LocalDateTime concertDate, Long seatNo);
+
+    void save(ConcertDomain concertDomain);
 }

@@ -20,11 +20,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ConcertRepositoryImpl implements ConcertRepository {
 
-    @Autowired
-    ConcertReservationJpaRepository concertReservationJpaRepository;
+    private final ConcertReservationJpaRepository concertReservationJpaRepository;
 
-    @Autowired
-    ConcertScheduleJpaRepository concertScheduleJpaRepository;
+    private final ConcertScheduleJpaRepository concertScheduleJpaRepository;
+    private final ConcertJpaRepository concertJpaRepository;
 
     @Override
     public List<ConcertDomain> findAvailableDatesByConcertId(Long concertId) {
@@ -50,16 +49,29 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public void saveConcertReservation(ConcertDomain concertSeat) {
-        ConcertReservation reservation = new ConcertReservation();
+        ConcertReservation reservation = ConcertReservation.builder()
+                .concertId(concertSeat.getConcertId())
+                .userId(concertSeat.getUserId())
+                .seatNo(concertSeat.getSeatNo())
+                .concertDate(concertSeat.getConcertDate())
+                .status(concertSeat.getStatus())
+                .build();
 
-        reservation.setConcertId(concertSeat.getConcertId());
-        reservation.setUserId(concertSeat.getUserId());
-        reservation.setSeatNo(concertSeat.getSeatNo());
         concertReservationJpaRepository.save(reservation);
     }
 
     @Override
     public ConcertDomain getUserReservation(Long concertId, LocalDateTime concertDate, Long seatNo) {
-        return concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(concertId, concertDate, seatNo);
+        return ConcertReservation.toDomain(concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(concertId, concertDate, seatNo));
     }
+
+    @Override
+    public void save(ConcertDomain concertDomain) {
+        Concert concert = Concert.builder()
+                .id(concertDomain.getConcertId())
+                .title(concertDomain.getTitle())
+                .build();
+        concertJpaRepository.save(concert);
+    }
+
 }

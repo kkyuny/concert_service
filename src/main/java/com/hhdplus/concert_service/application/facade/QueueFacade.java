@@ -5,14 +5,15 @@ import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.service.QueueService;
 import com.hhdplus.concert_service.business.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class QueueFacade {
     private static final int MAX_ACTIVE_USERS = 100;
     private static final int MAX_ACTIVE_MINUTES = 5;
@@ -60,14 +61,14 @@ public class QueueFacade {
         Long activeUserCount = queueService.getActiveUserCount(queue).getQueueCount();
         if(activeUserCount < MAX_ACTIVE_USERS){
             return QueueFacadeDto.builder()
-                    .queueCount(0L)
-                    .build();
+                .queueCount(0L)
+                .build();
         } else {
             Long waitingUserCountAfterMe = queueService.getWaitingUserCountBeforeMe(queue).getQueueCount();
 
             return QueueFacadeDto.builder()
-                    .queueCount(waitingUserCountAfterMe)
-                    .build();
+                .queueCount(waitingUserCountAfterMe)
+                .build();
         }
     }
 

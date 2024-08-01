@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class PaymentFacadeDto {
+    private Long id;
     private Long userId;
     private Long concertId;
     private LocalDateTime concertDate;
@@ -32,10 +33,11 @@ public class PaymentFacadeDto {
 
     public static PaymentDomain toDomain(PaymentFacadeDto dto) {
         return PaymentDomain.builder()
+                .id(dto.getId())
                 .userId(dto.getUserId())
                 .concertId(dto.getConcertId())
                 .concertDate(dto.getConcertDate())
-                .amount(dto.getAmount())
+                .amount(dto.getPrice())
                 .build();
     }
 

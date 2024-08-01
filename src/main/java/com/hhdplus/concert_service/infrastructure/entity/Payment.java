@@ -29,6 +29,7 @@ public class Payment {
 
     public static PaymentDomain toDomain(Payment entity) {
         return PaymentDomain.builder()
+                .id(entity.id)
                 .userId(entity.userId)
                 .concertId(entity.getConcertId())
                 .concertDate(entity.getConcertDate())
@@ -39,6 +40,7 @@ public class Payment {
     public static Payment toEntity(PaymentDomain domain) {
         Payment entity = new Payment();
 
+        entity.id = domain.getId();
         entity.userId = domain.getUserId();
         entity.concertId = domain.getConcertId();
         entity.concertDate = domain.getConcertDate();

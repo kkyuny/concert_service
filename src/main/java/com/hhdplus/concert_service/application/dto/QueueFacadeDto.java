@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class QueueFacadeDto {
-    private Long no;
     private Long userId;
     private String token;
     private String status;

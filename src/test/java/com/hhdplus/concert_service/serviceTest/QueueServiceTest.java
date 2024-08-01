@@ -99,18 +99,18 @@ public class QueueServiceTest {
         String token = "token";
 
         List<QueueDomain> activeQueues = Arrays.asList(
-                QueueDomain.builder().no(1L).status("active").build(),
-                QueueDomain.builder().no(2L).status("active").build(),
+                QueueDomain.builder().token("1").status("active").build(),
+                QueueDomain.builder().token("2").status("active").build(),
                 // QueueDomain.builder().no(3L).status("waiting").build(),
-                QueueDomain.builder().no(4L).status("active").build(),
-                QueueDomain.builder().no(5L).status("active").build(),
-                QueueDomain.builder().no(6L).status("active").build()
+                QueueDomain.builder().token("3").status("active").build(),
+                QueueDomain.builder().token("4").status("active").build(),
+                QueueDomain.builder().token("5").status("active").build()
 
         );
 
-        QueueDomain queueDomain = QueueDomain.builder().no(7L).build();
+        QueueDomain queueDomain = QueueDomain.builder().token("7").build();
 
-        when(queueRepository.findActiveQueues(queueDomain.getNo())).thenReturn(activeQueues);
+        when(queueRepository.findActiveQueues(queueDomain.getToken())).thenReturn(activeQueues);
 
         // when
         QueueDomain result = queueService.getActiveUserCount(queueDomain);
@@ -124,16 +124,16 @@ public class QueueServiceTest {
     void getWaitingUserCountBeforeMeTest() {
         // given
         List<QueueDomain> waitingQueues = Arrays.asList(
-                QueueDomain.builder().no(1L).status("waiting").build(),
-                QueueDomain.builder().no(2L).status("waiting").build(),
-                QueueDomain.builder().no(3L).status("waiting").build(),
-                QueueDomain.builder().no(4L).status("waiting").build()
+                QueueDomain.builder().token("1").status("waiting").build(),
+                QueueDomain.builder().token("2").status("waiting").build(),
+                QueueDomain.builder().token("3").status("waiting").build(),
+                QueueDomain.builder().token("4").status("waiting").build()
         );
 
-        QueueDomain queueDomain = QueueDomain.builder().no(5L).build();
+        QueueDomain queueDomain = QueueDomain.builder().token("5").build();
 
         // Mock 설정
-        when(queueRepository.findWaitingQueuesBeforeMe(5L)).thenReturn(waitingQueues);
+        when(queueRepository.findWaitingQueuesBeforeMe("5")).thenReturn(waitingQueues);
 
         // when
         QueueDomain result = queueService.getWaitingUserCountBeforeMe(queueDomain);
@@ -150,9 +150,9 @@ public class QueueServiceTest {
         long availableCount = 3L;
 
         List<QueueDomain> expectedWaitingUsers = Arrays.asList(
-                QueueDomain.builder().no(1L).status("waiting").build(),
-                QueueDomain.builder().no(2L).status("waiting").build(),
-                QueueDomain.builder().no(3L).status("waiting").build()
+                QueueDomain.builder().token("1").status("waiting").build(),
+                QueueDomain.builder().token("2").status("waiting").build(),
+                QueueDomain.builder().token("3").status("waiting").build()
         );
         when(queueRepository.findWaitingUserCountToActive(availableCount)).thenReturn(expectedWaitingUsers);
 

@@ -1,8 +1,6 @@
 package com.hhdplus.concert_service.infrastructure.repository;
 
-import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
-import com.hhdplus.concert_service.infrastructure.entity.ConcertSchedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,5 +15,5 @@ public interface ConcertReservationJpaRepository extends JpaRepository<ConcertRe
     boolean existsByConcertIdAndConcertDateAndSeatNo(Long concertId, LocalDateTime concertDate, Long seatNo);
 
     @Query("SELECT r FROM ConcertReservation r WHERE r.concertId = :concertId AND r.concertDate = :concertDate AND r.seatNo = :seatNo")
-    ConcertDomain findUserReservationByConcertIdAndDateAndSeatNo(@Param("concertId") Long concertId, @Param("concertDate") LocalDateTime concertDate, @Param("seatNo") Long seatNo);
+    ConcertReservation findUserReservationByConcertIdAndDateAndSeatNo(@Param("concertId") Long concertId, @Param("concertDate") LocalDateTime concertDate, @Param("seatNo") Long seatNo);
 }

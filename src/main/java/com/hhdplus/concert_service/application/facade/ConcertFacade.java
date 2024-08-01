@@ -2,6 +2,7 @@ package com.hhdplus.concert_service.application.facade;
 
 import com.hhdplus.concert_service.application.dto.ConcertFacadeDto;
 import com.hhdplus.concert_service.business.service.ConcertService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 @Component
+@RequiredArgsConstructor
 public class ConcertFacade {
     private static final int MAX_SEAT_NO = 50;
 
@@ -36,14 +38,8 @@ public class ConcertFacade {
         Long concertId = dto.getConcertId();
         LocalDateTime concertDate = dto.getConcertDate();
 
-        // 예약된 좌석 번호 목록을 가져옵니다.
-        List<Long> reservedSeats = concertService.findReservedSeats(concertId, concertDate);
-
-        // 예약되지 않은 좌석 번호를 필터링하여 목록을 생성합니다.
-        List<Long> availableSeats = LongStream.rangeClosed(1, MAX_SEAT_NO)
-                .filter(seatNo -> !reservedSeats.contains(seatNo))
-                .boxed()
-                .collect(Collectors.toList());
+        // 예약안된 좌석 번호 목록
+        List<Long> availableSeats = concertService.findReservedSeats(concertId, concertDate);
 
         return ConcertFacadeDto.builder()
                 .concertId(concertId)

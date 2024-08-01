@@ -9,11 +9,11 @@ public interface QueueRepository {
 
     Optional<QueueDomain> findById(String token);
 
-    List<QueueDomain> findActiveQueues(Long no);
+    List<QueueDomain> findActiveQueues(String token);
 
     List<QueueDomain> findActiveQueues();
 
-    List<QueueDomain> findWaitingQueuesBeforeMe(Long no);
+    List<QueueDomain> findWaitingQueuesBeforeMe(String token);
 
     List<QueueDomain> findWaitingUserCountToActive(Long availableCount);
 

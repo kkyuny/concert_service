@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class QueueResponseDto {
-    private Long no;
     private Long userId;
     private String token;
     private String status;
@@ -23,7 +22,6 @@ public class QueueResponseDto {
                 .userId(dto.getUserId())
                 .token(dto.getToken())
                 .status(dto.getStatus())
-                .no(dto.getNo())
                 .queueCount(dto.getQueueCount())
                 .validDate(dto.getValidDate())
                 .build();

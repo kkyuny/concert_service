@@ -17,19 +17,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Queue {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long no;
-
     @Id
     private String token;
     private String status;
+    private Long userId;
     private LocalDateTime validDate;
     private LocalDateTime regiDate;
 
     public static QueueDomain toDomain(Queue entity) {
         return QueueDomain.builder()
-                .no(entity.getNo())
                 .token(entity.getToken())
+                .userId(entity.userId)
                 .status(entity.getStatus())
                 .validDate(entity.getValidDate())
                 .build();
@@ -38,9 +36,9 @@ public class Queue {
     public static Queue toEntity(QueueDomain domain) {
         Queue entity = new Queue();
 
-        entity.no = domain.getNo();
         entity.token = domain.getToken();
         entity.status = domain.getStatus();
+        entity.userId = domain.getUserId();
         entity.validDate = domain.getValidDate();
 
         return entity;

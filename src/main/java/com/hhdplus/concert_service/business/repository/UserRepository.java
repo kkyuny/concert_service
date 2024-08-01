@@ -9,4 +9,6 @@ public interface UserRepository {
     Optional<UserDomain> findById(Long userId);
 
     UserDomain save(UserDomain user);
+
+    Optional<UserDomain> findUserByIdWithPessimisticWrite(Long userId);
 }

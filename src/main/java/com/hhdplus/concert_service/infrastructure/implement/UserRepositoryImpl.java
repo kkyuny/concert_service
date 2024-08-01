@@ -26,4 +26,9 @@ public class UserRepositoryImpl implements UserRepository {
         return User.toDomain(jpaRepository.save(User.toEntity(user)));
     }
 
+    @Override
+    public Optional<UserDomain> findUserByIdWithPessimisticWrite(Long userId) {
+        return jpaRepository.findUserByIdWithPessimisticWrite(userId).map(User::toDomain);
+    }
+
 }

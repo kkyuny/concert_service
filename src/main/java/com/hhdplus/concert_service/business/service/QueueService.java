@@ -6,6 +6,7 @@ import com.hhdplus.concert_service.business.repository.QueueRepository;
 import com.hhdplus.concert_service.infrastructure.entity.Queue;
 import com.hhdplus.concert_service.interfaces.common.exception.InvalidReqBodyException;
 import com.hhdplus.concert_service.interfaces.dto.request.QueueRequestDto;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +17,18 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class QueueService {
     private static final int MAX_ACTIVE_USERS = 100;
     private static final int MAX_ACTIVE_MINUTES = 5;
 
     static Logger LOGGER = LoggerFactory.getLogger(QueueService.class);
 
-    @Autowired
-    QueueRepository queueRepository;
+    private final QueueRepository queueRepository;
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public QueueDomain createToken(UserDomain user) {
 
         QueueDomain queue = QueueDomain.builder()
@@ -55,7 +54,7 @@ public class QueueService {
     }
 
     public QueueDomain getActiveUserCount(QueueDomain queue) {
-        List<QueueDomain> activeQueues = queueRepository.findActiveQueues(queue.getNo());
+        List<QueueDomain> activeQueues = queueRepository.findActiveQueues(queue.getToken());
 
         Long activeCount = (long) activeQueues.size();
 
@@ -85,16 +84,21 @@ public class QueueService {
             .status("active")
             .validDate(LocalDateTime.now().plusMinutes(MAX_ACTIVE_MINUTES))
             .build();
+        try {
+            return queueRepository.save(queue);
+        } catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            LOGGER.error("Status change to active error", e);
 
-        return queueRepository.save(queue);
+            return null;
+        }
     }
 
     public QueueDomain getWaitingUserCountBeforeMe(QueueDomain queue) {
-        List<QueueDomain> waitingQueues = queueRepository.findWaitingQueuesBeforeMe(queue.getNo());
+        List<QueueDomain> waitingQueues = queueRepository.findWaitingQueuesBeforeMe(queue.getToken());
         long waitingUserCountBeforeMe = waitingQueues.size();
 
         return QueueDomain.builder()
-                .no(queue.getNo())
                 .queueCount(waitingUserCountBeforeMe)
                 .build();
     }
@@ -108,7 +112,12 @@ public class QueueService {
     }
 
     public void deleteQueue(String token) {
-        queueRepository.deleteById(token);
+        try{
+            queueRepository.deleteById(token);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            LOGGER.error("Queue delete error", e);
+        }
     }
 
     public QueueDomain findTokenByUserId(Long userId) {

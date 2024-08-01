@@ -2,10 +2,7 @@ package com.hhdplus.concert_service.infrastructure.entity;
 
 import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.h2.schema.Domain;
 
@@ -28,23 +25,28 @@ public class ConcertReservation {
     private String status;
     private LocalDateTime validDate;
     private LocalDateTime regiDate;
+    @Version
+    private int version;
 
     public static ConcertDomain toDomain(ConcertReservation entity) {
         return ConcertDomain.builder()
+                .id(entity.getId())
                 .concertId(entity.getConcertId())
                 .seatNo(entity.getSeatNo())
                 .status(entity.getStatus())
                 .userId(entity.getUserId())
+                .concertDate(entity.getConcertDate())
                 .validTime(entity.getValidDate())
                 .build();
     }
 
     public static ConcertReservation toEntity(ConcertDomain domain) {
         ConcertReservation entity = new ConcertReservation();
-
+        entity.id = domain.getId();
         entity.concertId = domain.getConcertId();
         entity.seatNo = domain.getSeatNo();
         entity.status = domain.getStatus();
+        entity.concertDate = domain.getConcertDate();
         entity.userId = domain.getUserId();
         entity.validDate = domain.getValidTime();
 
