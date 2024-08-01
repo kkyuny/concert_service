@@ -118,7 +118,7 @@ class PaymentFacadeIntegrationTest {
 
         // executePayment 실행 시 테스트 실패
         // 의도: 테스트에 필요한 엔티티 저장 후 테스트를 실행하여 결과 값 비교
-        // 테스트 결과: payment의 status를 "paid"로 update 코드 수행 시 insert를 시도하여 에러 발생
+        // 테스트 결과: reservation의 status를 "paid"로 update 코드 수행 시 insert를 시도하여 에러 발생
         // 실패 원인: 예약 상태를 update를 하고 싶은데 저장된 엔티티를 인식하지 못하고 insert를 시도함.
         PaymentFacadeDto result = paymentFacade.executePayment(dto);
 
