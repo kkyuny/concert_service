@@ -72,7 +72,7 @@ class PaymentFacadeIntegrationTest {
                 .build();
         testConcert = concertJpaRepository.save(testConcert);
 
-        // 하나의 콘서트 일정 엔티티 생성 및 저장
+        // 콘서트 일정 엔티티 생성 및 저장
         testConcertSchedule = ConcertSchedule.builder()
                 .id(1L)
                 .concertId(testConcert.getId())
@@ -106,6 +106,7 @@ class PaymentFacadeIntegrationTest {
     @Test
     @DisplayName("결제 성공 테스트")
     void executePaymentSuccessTest() {
+        // 결제에 필요한 PaymentFacadeDto 생성
         PaymentFacadeDto dto = PaymentFacadeDto.builder()
                 .id(1L)
                 .userId(testUser.getUserId())
@@ -115,6 +116,10 @@ class PaymentFacadeIntegrationTest {
                 .price(150L)
                 .build();
 
+        // executePayment 실행 시 테스트 실패
+        // 의도: 테스트에 필요한 엔티티 저장 후 테스트를 실행하여 결과 값 비교
+        // 테스트 결과: payment의 status를 "paid"로 update 코드 수행 시 insert를 시도하여 에러 발생
+        // 실패 원인: 예약 상태를 update를 하고 싶은데 저장된 엔티티를 인식하지 못하고 insert를 시도함.
         PaymentFacadeDto result = paymentFacade.executePayment(dto);
 
         assertThat(result).isNotNull();
