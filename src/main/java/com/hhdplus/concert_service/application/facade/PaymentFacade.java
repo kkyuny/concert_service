@@ -33,6 +33,7 @@ public class PaymentFacade {
     QueueService queueService;
 
     public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
+        // 예약 정보 조회
         Optional<ConcertDomain> reservationOpt = Optional.ofNullable(concertService.getUserReservation(PaymentFacadeDto.toConcertDomain(dto)));
 
         if(reservationOpt.isEmpty())
@@ -47,6 +48,23 @@ public class PaymentFacade {
 
                 userService.useAmountUser(user, dto.getPrice());
                 PaymentDomain paymentResult = paymentService.savePayment(PaymentFacadeDto.toDomain(dto));
+
+                // 의도: 해당 예약정보가 정상일 경우 status를 "paid"로 change
+                // 하지만 예약정보가 있지만 insert가 시도되면서 중복 insert 에러 발생함.
+                /*
+                    @Override // update를 시도하는 코드
+                    public void saveConcertReservation(ConcertDomain concertSeat) {
+                        ConcertReservation reservation = ConcertReservation.builder()
+                                .concertId(concertSeat.getConcertId())
+                                .userId(concertSeat.getUserId())
+                                .seatNo(concertSeat.getSeatNo())
+                                .concertDate(concertSeat.getConcertDate())
+                                .status(concertSeat.getStatus())
+                                .build();
+
+                        concertReservationJpaRepository.save(reservation);
+                    }
+                 */
                 concertService.changeConcertReserveToFinish(reservation);
                 String token = queueService.findTokenByUserId(user.getUserId()).getToken();
                 queueService.deleteQueue(token);
