@@ -3,13 +3,10 @@ package com.hhdplus.concert_service.business.service;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.repository.QueueRepository;
-import com.hhdplus.concert_service.infrastructure.entity.Queue;
 import com.hhdplus.concert_service.interfaces.common.exception.InvalidReqBodyException;
-import com.hhdplus.concert_service.interfaces.dto.request.QueueRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +14,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -120,7 +118,7 @@ public class QueueService {
         }
     }
 
-    public QueueDomain findTokenByUserId(Long userId) {
-        return queueRepository.findTokenByUserId(userId);
+    public Optional<QueueDomain> findQueueByUserId(Long userId) {
+        return queueRepository.findByUserId(userId);
     }
 }

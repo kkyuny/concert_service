@@ -1,8 +1,7 @@
 CREATE TABLE "user" (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     amount BIGINT DEFAULT 0,
-    regi_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    version BIGINT DEFAULT 0
+    regi_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE queue (
@@ -38,8 +37,7 @@ CREATE TABLE concert_reservation (
     valid_date TIMESTAMP,
     regi_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     version INT,
-    FOREIGN KEY (concert_id) REFERENCES concert(id),
-    UNIQUE (concert_id, concert_date, seat_no)
+    FOREIGN KEY (concert_id) REFERENCES concert(id)
 );
 
 CREATE TABLE payment (
@@ -48,5 +46,6 @@ CREATE TABLE payment (
     concert_id BIGINT NOT NULL,
     concert_date TIMESTAMP NOT NULL,
     amount BIGINT NOT NULL,
+    seat_no BIGINT,
     regi_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

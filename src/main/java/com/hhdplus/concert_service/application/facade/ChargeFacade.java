@@ -32,10 +32,14 @@ public class ChargeFacade {
     }
 
     public ChargeFacadeDto useUserAmount(ChargeFacadeDto dto) {
-        UserDomain user = userService.findUserById(dto.getUserId());
+        UserDomain userDomain = userService.useAmountUser(dto.getUserId(), dto.getAmount());
+
+        if (userDomain == null) {
+            throw new RuntimeException("Failed to use amount for user.");
+        }
 
         return ChargeFacadeDto.builder()
-            .amount(userService.useAmountUser(user, dto.getAmount()).getAmount())
-            .build();
+                .amount(userDomain.getAmount())
+                .build();
     }
 }

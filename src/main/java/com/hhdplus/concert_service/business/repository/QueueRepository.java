@@ -19,5 +19,5 @@ public interface QueueRepository {
 
     void deleteById(String token);
 
-    QueueDomain findTokenByUserId(Long userId);
+    Optional<QueueDomain> findByUserId(Long userId);
 }

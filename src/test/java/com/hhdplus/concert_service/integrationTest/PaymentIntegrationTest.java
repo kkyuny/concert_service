@@ -12,6 +12,8 @@ import com.hhdplus.concert_service.infrastructure.entity.ConcertSchedule;
 import com.hhdplus.concert_service.infrastructure.entity.Queue;
 import com.hhdplus.concert_service.infrastructure.repository.*;
 import com.hhdplus.concert_service.interfaces.common.exception.BadRequestException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,18 +54,21 @@ class PaymentFacadeIntegrationTest {
     @Autowired
     private UserJpaRepository userJpaRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private Concert testConcert;
 
     private ConcertSchedule testConcertSchedule;
 
-    private UserDomain testUser;
+    private ConcertReservation reservation;
 
-    private Queue testQueue;
+    private UserDomain testUser;
 
     @BeforeEach
     void setUp() {
         // 유저 엔티티 생성 및 저장
-        testUser = UserDomain.builder().userId(1L).amount(1000L).build();
+        testUser = UserDomain.builder().userId(0L).amount(1000L).build();
         testUser = userRepository.save(testUser);
 
         // 콘서트 엔티티 생성 및 저장
@@ -74,7 +80,6 @@ class PaymentFacadeIntegrationTest {
 
         // 콘서트 일정 엔티티 생성 및 저장
         testConcertSchedule = ConcertSchedule.builder()
-                .id(1L)
                 .concertId(testConcert.getId())
                 .price(150L)
                 .concertDate(LocalDateTime.now())
@@ -93,14 +98,16 @@ class PaymentFacadeIntegrationTest {
                 .build();
         concertReservationJpaRepository.save(reservation);
 
-        // 큐 엔티티 생성 및 저장
-        testQueue = queueJpaRepository.save(Queue.builder()
+        // 토큰 생성 및 저장
+        Queue testQueue = Queue.builder()
                 .token("test-token")
                 .userId(testUser.getUserId())
                 .status("active")
                 .validDate(LocalDateTime.now().plusMinutes(5))
                 .regiDate(LocalDateTime.now())
-                .build());
+                .build();
+
+        queueJpaRepository.save(testQueue);
     }
 
     @Test
@@ -108,7 +115,6 @@ class PaymentFacadeIntegrationTest {
     void executePaymentSuccessTest() {
         // 결제에 필요한 PaymentFacadeDto 생성
         PaymentFacadeDto dto = PaymentFacadeDto.builder()
-                .id(1L)
                 .userId(testUser.getUserId())
                 .concertId(testConcert.getId())
                 .concertDate(testConcertSchedule.getConcertDate())
@@ -116,10 +122,6 @@ class PaymentFacadeIntegrationTest {
                 .price(150L)
                 .build();
 
-        // executePayment 실행 시 테스트 실패
-        // 의도: 테스트에 필요한 엔티티 저장 후 테스트를 실행하여 결과 값 비교
-        // 테스트 결과: reservation의 status를 "paid"로 update 코드 수행 시 insert를 시도하여 에러 발생
-        // 실패 원인: 예약 상태를 update를 하고 싶은데 저장된 엔티티를 인식하지 못하고 insert를 시도함.
         PaymentFacadeDto result = paymentFacade.executePayment(dto);
 
         assertThat(result).isNotNull();
@@ -129,7 +131,7 @@ class PaymentFacadeIntegrationTest {
 
         // 결제 후 예약 상태가 "paid"로 변경되었는지 확인
         ConcertReservation updatedReservation = concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(
-                testConcert.getId(), testConcertSchedule.getConcertDate(), 1L);
+                result.getConcertId(), result.getConcertDate(), result.getSeatNo());
         assertThat(updatedReservation.getStatus()).isEqualTo("paid");
 
         // 큐가 삭제되었는지 확인

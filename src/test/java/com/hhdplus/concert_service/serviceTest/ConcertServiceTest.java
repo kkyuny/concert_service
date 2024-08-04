@@ -1,5 +1,6 @@
 package com.hhdplus.concert_service.serviceTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -7,10 +8,14 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.repository.ConcertRepository;
 import com.hhdplus.concert_service.business.service.ConcertService;
+import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
+import com.hhdplus.concert_service.infrastructure.repository.ConcertReservationJpaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +33,9 @@ public class ConcertServiceTest {
 
     @InjectMocks
     private ConcertService concertService;
+
+    @Mock
+    private ConcertReservationJpaRepository concertReservationJpaRepository;
 
     @Test
     @DisplayName("콘서트 일정 조회 테스트")
@@ -106,5 +114,35 @@ public class ConcertServiceTest {
 
         assertFalse(result);
         verify(concertRepository, never()).saveConcertReservation(any(ConcertDomain.class));
+    }
+
+    @Test
+    @DisplayName("예약 상태 변경 테스트")
+    void testChangeConcertReserveToFinish() {
+        // given
+        ConcertDomain testReservation = ConcertDomain.builder()
+                .id(1L)
+                .concertId(1L)
+                .concertDate(LocalDateTime.now())
+                .seatNo(1L)
+                .userId(1L)
+                .status("waiting")
+                .build();
+
+        when(concertRepository.findConcertReservation(testReservation.getId()))
+                .thenReturn(Optional.of(testReservation));
+
+        // when
+        concertService.changeConcertReserveToFinish(testReservation);
+
+        // then
+        verify(concertRepository, times(1)).saveConcertReservation(any(ConcertDomain.class));
+
+        // verify the state change
+        when(concertRepository.findConcertReservation(testReservation.getId()))
+                .thenReturn(Optional.of(testReservation));
+
+        ConcertDomain updatedReservation = concertService.findConcertReservation(testReservation.getId());
+        assertThat(updatedReservation.getStatus()).isEqualTo("paid");
     }
 }

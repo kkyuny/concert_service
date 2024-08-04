@@ -104,8 +104,9 @@ class UserServiceTest {
         UserDomain user = UserDomain.builder().userId(userId).amount(amount).build();
 
         //when
+        when(userRepository.findUserByIdWithPessimisticWrite(userId)).thenReturn(Optional.of(user));
         when(userRepository.save(any(UserDomain.class))).thenReturn(user);
-        UserDomain result = userService.useAmountUser(user, useAmount);
+        UserDomain result = userService.useAmountUser(user.getUserId(), useAmount);
 
         //then
         assertThat(result.getAmount()).isEqualTo(200L);
@@ -121,7 +122,8 @@ class UserServiceTest {
         UserDomain user = UserDomain.builder().userId(userId).amount(amount).build();
 
         //when & then
-        assertThatThrownBy(() -> userService.useAmountUser(user, useAmount))
+        when(userRepository.findUserByIdWithPessimisticWrite(userId)).thenReturn(Optional.of(user));
+        assertThatThrownBy(() -> userService.useAmountUser(user.getUserId(), useAmount))
                 .isInstanceOf(InvalidReqBodyException.class);
     }
 
@@ -135,7 +137,8 @@ class UserServiceTest {
         UserDomain user = UserDomain.builder().userId(userId).amount(amount).build();
 
         //when & then
-        assertThatThrownBy(() -> userService.useAmountUser(user, useAmount))
+        when(userRepository.findUserByIdWithPessimisticWrite(userId)).thenReturn(Optional.of(user));
+        assertThatThrownBy(() -> userService.useAmountUser(user.getUserId(), useAmount))
                 .isInstanceOf(InvalidReqBodyException.class);
     }
 }
