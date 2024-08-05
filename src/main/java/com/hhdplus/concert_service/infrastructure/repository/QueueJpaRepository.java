@@ -25,5 +25,5 @@ public interface QueueJpaRepository extends JpaRepository<Queue, String> {
     List<Queue> findWaitingUserCountToActive(Pageable pageable);
 
     @Query("SELECT q FROM Queue q WHERE q.userId = :userId")
-    Queue findTokenByUserId(@Param("userId") Long userId);
+    Optional<Queue> findByUserId(@Param("userId") Long userId);
 }

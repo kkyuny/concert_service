@@ -25,6 +25,7 @@ public class Payment {
     private Long concertId;
     private LocalDateTime concertDate;
     private Long amount;
+    private Long seatNo;
     private LocalDateTime regiDate;
 
     public static PaymentDomain toDomain(Payment entity) {
@@ -34,6 +35,7 @@ public class Payment {
                 .concertId(entity.getConcertId())
                 .concertDate(entity.getConcertDate())
                 .amount(entity.getAmount())
+                .seatNo(entity.seatNo)
                 .build();
     }
 
@@ -45,6 +47,7 @@ public class Payment {
         entity.concertId = domain.getConcertId();
         entity.concertDate = domain.getConcertDate();
         entity.amount = domain.getAmount();
+        entity.seatNo = domain.getSeatNo();
 
         return entity;
     }

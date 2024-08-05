@@ -64,4 +64,7 @@ public class ConcertFacade {
                 .seatNo(seatNo)
                 .build();
     }
+
+    public void cancelReservation() {
+    }
 }

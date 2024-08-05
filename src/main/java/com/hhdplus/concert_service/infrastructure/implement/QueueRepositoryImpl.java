@@ -65,7 +65,8 @@ public class QueueRepositoryImpl implements QueueRepository {
     }
 
     @Override
-    public QueueDomain findTokenByUserId(Long userId) {
-        return Queue.toDomain(jpaRepository.findTokenByUserId(userId));
+    public Optional<QueueDomain> findByUserId(Long userId) {
+        return jpaRepository.findByUserId(userId).map(Queue::toDomain);
     }
+
 }

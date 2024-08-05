@@ -4,16 +4,15 @@ import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.repository.ConcertRepository;
 import com.hhdplus.concert_service.infrastructure.entity.Concert;
 import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
-import com.hhdplus.concert_service.infrastructure.entity.ConcertSchedule;
 import com.hhdplus.concert_service.infrastructure.repository.ConcertJpaRepository;
 import com.hhdplus.concert_service.infrastructure.repository.ConcertReservationJpaRepository;
 import com.hhdplus.concert_service.infrastructure.repository.ConcertScheduleJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -49,13 +48,25 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public void saveConcertReservation(ConcertDomain concertSeat) {
-        ConcertReservation reservation = ConcertReservation.builder()
-                .concertId(concertSeat.getConcertId())
-                .userId(concertSeat.getUserId())
-                .seatNo(concertSeat.getSeatNo())
-                .concertDate(concertSeat.getConcertDate())
-                .status(concertSeat.getStatus())
-                .build();
+        Optional<ConcertReservation> existingReservation = concertReservationJpaRepository.findById(concertSeat.getId());
+
+        ConcertReservation reservation;
+        if (existingReservation.isPresent()) {
+            reservation = existingReservation.get();
+            reservation.setStatus(concertSeat.getStatus());
+            reservation.setConcertDate(concertSeat.getConcertDate());
+            reservation.setSeatNo(concertSeat.getSeatNo());
+            reservation.setUserId(concertSeat.getUserId());
+            reservation.setConcertId(concertSeat.getConcertId());
+        } else {
+            reservation = ConcertReservation.builder()
+                    .concertId(concertSeat.getConcertId())
+                    .userId(concertSeat.getUserId())
+                    .seatNo(concertSeat.getSeatNo())
+                    .concertDate(concertSeat.getConcertDate())
+                    .status(concertSeat.getStatus())
+                    .build();
+        }
 
         concertReservationJpaRepository.save(reservation);
     }
@@ -72,6 +83,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                 .title(concertDomain.getTitle())
                 .build();
         concertJpaRepository.save(concert);
+    }
+
+    @Override
+    public Optional<ConcertDomain> findConcertReservation(Long id) {
+        return concertReservationJpaRepository.findById(id).map(ConcertReservation::toDomain);
     }
 
 }

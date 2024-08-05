@@ -22,8 +22,6 @@ public class User {
     @ColumnDefault("0")
     private Long amount;
     private LocalDateTime regiDate;
-    @Version
-    private int version;
 
     public static UserDomain toDomain(User entity) {
         return UserDomain.builder()

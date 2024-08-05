@@ -13,7 +13,4 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT u FROM User u WHERE u.id = :userId")
     Optional<User> findUserByIdWithPessimisticWrite(Long userId);
-
-    @Query("SELECT u FROM User u WHERE u.id = :userId")
-    Optional<User> findById(@Param("userId") Long userId);
 }

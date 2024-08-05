@@ -38,6 +38,7 @@ public class PaymentFacadeDto {
                 .concertId(dto.getConcertId())
                 .concertDate(dto.getConcertDate())
                 .amount(dto.getPrice())
+                .seatNo(dto.getSeatNo())
                 .build();
     }
 

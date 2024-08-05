@@ -2,10 +2,10 @@ package com.hhdplus.concert_service.business.service;
 
 import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.repository.ConcertRepository;
+import com.hhdplus.concert_service.interfaces.common.exception.InvalidReqBodyException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +13,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -87,6 +88,15 @@ public class ConcertService {
         } catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LOGGER.error("Reservation status change error", e);
+        }
+    }
+
+    public ConcertDomain findConcertReservation(Long id){
+        Optional<ConcertDomain> result = concertRepository.findConcertReservation(id);
+        if(result.isPresent()){
+            return result.get();
+        } else {
+            throw new InvalidReqBodyException("Concert reservation not found");
         }
     }
 }
