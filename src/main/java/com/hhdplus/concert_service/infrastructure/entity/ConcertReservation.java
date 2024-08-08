@@ -1,14 +1,19 @@
 package com.hhdplus.concert_service.infrastructure.entity;
 
 import com.hhdplus.concert_service.business.domain.ConcertDomain;
-import com.hhdplus.concert_service.business.domain.QueueDomain;
 import jakarta.persistence.*;
 import lombok.*;
-import org.h2.schema.Domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
+@Table(name = "concert_reservation", indexes = {
+        @Index(name = "idx_concert_reservation_concert_id", columnList = "concertId"),
+        @Index(name = "idx_concert_reservation_concert_date", columnList = "concertDate"),
+        @Index(name = "idx_concert_reservation_concert_id_concert_date", columnList = "concertId, concertDate") // 복합 인덱스 추가
+})
 @Getter
 @Setter
 @Builder
@@ -42,6 +47,7 @@ public class ConcertReservation {
 
     public static ConcertReservation toEntity(ConcertDomain domain) {
         ConcertReservation entity = new ConcertReservation();
+
         entity.id = domain.getId();
         entity.concertId = domain.getConcertId();
         entity.seatNo = domain.getSeatNo();
@@ -51,5 +57,11 @@ public class ConcertReservation {
         entity.validDate = domain.getValidTime();
 
         return entity;
+    }
+
+    public static List<ConcertReservation> toEntity(List<ConcertDomain> domains) {
+        return domains.stream()
+                .map(ConcertReservation::toEntity)
+                .collect(Collectors.toList());
     }
 }

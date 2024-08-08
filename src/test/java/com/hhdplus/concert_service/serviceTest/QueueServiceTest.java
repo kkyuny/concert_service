@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+
 public class QueueServiceTest {
     private static final int MAX_ACTIVE_USERS = 100;
     private static final int MAX_ACTIVE_MINUTES = 5;

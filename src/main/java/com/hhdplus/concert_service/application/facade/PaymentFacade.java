@@ -15,6 +15,7 @@ import com.hhdplus.concert_service.interfaces.common.exception.InternalServerErr
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class PaymentFacade {
 
     public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
         // 예약 정보 조회
-        Optional<ConcertDomain> reservationOpt = Optional.ofNullable(concertService.getUserReservation(PaymentFacadeDto.toConcertDomain(dto)));
+        Optional<ConcertDomain> reservationOpt = concertService.getUserReservation(PaymentFacadeDto.toConcertDomain(dto));
 
         if(reservationOpt.isEmpty())
             throw new BadRequestException("Reservation not exist");
@@ -65,6 +66,7 @@ public class PaymentFacade {
                         .seatNo(paymentResult.getSeatNo())
                         .build();
             } catch (Exception e) {
+                // 보상 트랜잭션 필요
                 throw new InternalServerErrorException("Seat reservation failed");
             }
         } else {

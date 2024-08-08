@@ -1,6 +1,7 @@
 package com.hhdplus.concert_service.business.repository;
 
 import com.hhdplus.concert_service.business.domain.ConcertDomain;
+import com.hhdplus.concert_service.business.domain.QueueDomain;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +16,13 @@ public interface ConcertRepository {
 
     void saveConcertReservation(ConcertDomain reservedSeat);
 
-    ConcertDomain getUserReservation(Long concertId, LocalDateTime concertDate, Long seatNo);
+    Optional<ConcertDomain> getUserReservation(Long concertId, LocalDateTime concertDate, Long seatNo);
+
+    Optional<ConcertDomain> getUserReservationByConcertIdAndDateAndSeatNoWithLock(Long concertId, LocalDateTime concertDate, Long seatNo);
 
     void save(ConcertDomain concertDomain);
 
     Optional<ConcertDomain> findConcertReservation(Long id);
+
+    void saveAll(List<ConcertDomain> reservations);
 }

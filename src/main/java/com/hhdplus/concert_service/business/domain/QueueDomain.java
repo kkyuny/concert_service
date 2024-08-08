@@ -18,6 +18,7 @@ public class QueueDomain {
     private String status;
     private String token;
     private LocalDateTime validDate;
+    private LocalDateTime regiDate;
     private Long queueCount;
 
     public void create(){

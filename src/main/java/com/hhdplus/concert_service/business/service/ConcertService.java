@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class ConcertService {
 
@@ -48,6 +47,7 @@ public class ConcertService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public boolean reserveSeat(Long concertId, LocalDateTime concertDate, Long userId, Long seatNo) {
         // 좌석 예약
         if (concertRepository.existsByConcertIdAndDateAndSeatNo(concertId, concertDate, seatNo)) {
@@ -73,7 +73,7 @@ public class ConcertService {
         }
     }
 
-    public ConcertDomain getUserReservation(ConcertDomain domain){
+    public Optional<ConcertDomain> getUserReservation(ConcertDomain domain){
         Long concertId = domain.getConcertId();
         LocalDateTime concertDate = domain.getConcertDate();
         Long seatNo = domain.getSeatNo();
@@ -81,6 +81,7 @@ public class ConcertService {
         return concertRepository.getUserReservation(concertId, concertDate, seatNo);
     }
 
+    @Transactional
     public void changeConcertReserveToFinish(ConcertDomain concertDomain) {
         try{
             concertDomain.setStatus("paid");

@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class QueueService {
     private static final int MAX_ACTIVE_USERS = 100;
@@ -27,6 +28,7 @@ public class QueueService {
 
     private final QueueRepository queueRepository;
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public QueueDomain createToken(UserDomain user) {
 
         QueueDomain queue = QueueDomain.builder()
@@ -77,14 +79,15 @@ public class QueueService {
         return activeUsersCount >= MAX_ACTIVE_USERS;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public QueueDomain changeStatusToActive(QueueDomain queue) {
         QueueDomain.builder()
-            .status("active")
-            .validDate(LocalDateTime.now().plusMinutes(MAX_ACTIVE_MINUTES))
-            .build();
+                .status("active")
+                .validDate(LocalDateTime.now().plusMinutes(MAX_ACTIVE_MINUTES))
+                .build();
         try {
             return queueRepository.save(queue);
-        } catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LOGGER.error("Status change to active error", e);
 
@@ -109,8 +112,9 @@ public class QueueService {
         return queueRepository.findActiveQueues();
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void deleteQueue(String token) {
-        try{
+        try {
             queueRepository.deleteById(token);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -120,5 +124,17 @@ public class QueueService {
 
     public Optional<QueueDomain> findQueueByUserId(Long userId) {
         return queueRepository.findByUserId(userId);
+    }
+
+    public List<QueueDomain> findAllQueueDomains() {
+        return queueRepository.findAllQueues().stream()
+                .map(queue -> QueueDomain.builder()
+                        .token(queue.getToken())
+                        .userId(queue.getUserId())
+                        .status(queue.getStatus())
+                        .validDate(queue.getValidDate())
+                        .regiDate(queue.getRegiDate())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

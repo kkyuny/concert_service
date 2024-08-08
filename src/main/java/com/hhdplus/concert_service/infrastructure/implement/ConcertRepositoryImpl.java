@@ -4,6 +4,7 @@ import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.repository.ConcertRepository;
 import com.hhdplus.concert_service.infrastructure.entity.Concert;
 import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
+import com.hhdplus.concert_service.infrastructure.entity.Queue;
 import com.hhdplus.concert_service.infrastructure.repository.ConcertJpaRepository;
 import com.hhdplus.concert_service.infrastructure.repository.ConcertReservationJpaRepository;
 import com.hhdplus.concert_service.infrastructure.repository.ConcertScheduleJpaRepository;
@@ -60,20 +61,25 @@ public class ConcertRepositoryImpl implements ConcertRepository {
             reservation.setConcertId(concertSeat.getConcertId());
         } else {
             reservation = ConcertReservation.builder()
-                    .concertId(concertSeat.getConcertId())
-                    .userId(concertSeat.getUserId())
-                    .seatNo(concertSeat.getSeatNo())
-                    .concertDate(concertSeat.getConcertDate())
-                    .status(concertSeat.getStatus())
-                    .build();
+                .concertId(concertSeat.getConcertId())
+                .userId(concertSeat.getUserId())
+                .seatNo(concertSeat.getSeatNo())
+                .concertDate(concertSeat.getConcertDate())
+                .status(concertSeat.getStatus())
+                .build();
         }
 
         concertReservationJpaRepository.save(reservation);
     }
 
     @Override
-    public ConcertDomain getUserReservation(Long concertId, LocalDateTime concertDate, Long seatNo) {
-        return ConcertReservation.toDomain(concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(concertId, concertDate, seatNo));
+    public Optional<ConcertDomain> getUserReservation(Long concertId, LocalDateTime concertDate, Long seatNo) {
+        return concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(concertId, concertDate, seatNo).map(ConcertReservation::toDomain);
+    }
+
+    @Override
+    public Optional<ConcertDomain> getUserReservationByConcertIdAndDateAndSeatNoWithLock(Long concertId, LocalDateTime concertDate, Long seatNo) {
+        return Optional.empty();
     }
 
     @Override
@@ -88,6 +94,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     @Override
     public Optional<ConcertDomain> findConcertReservation(Long id) {
         return concertReservationJpaRepository.findById(id).map(ConcertReservation::toDomain);
+    }
+
+    @Override
+    public void saveAll(List<ConcertDomain> reservations) {
+        concertReservationJpaRepository.saveAll(ConcertReservation.toEntity(reservations));
     }
 
 }

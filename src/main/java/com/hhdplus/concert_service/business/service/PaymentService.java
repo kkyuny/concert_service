@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class PaymentService {
 
@@ -20,6 +19,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PaymentDomain savePayment(PaymentDomain domain){
         try {
             return paymentRepository.save(domain);
