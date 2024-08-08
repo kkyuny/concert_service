@@ -26,4 +26,7 @@ public interface QueueJpaRepository extends JpaRepository<Queue, String> {
 
     @Query("SELECT q FROM Queue q WHERE q.userId = :userId")
     Optional<Queue> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT q FROM Queue q")
+    List<Queue> findAllQueues();
 }

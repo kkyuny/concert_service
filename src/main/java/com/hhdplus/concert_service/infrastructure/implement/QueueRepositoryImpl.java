@@ -69,4 +69,14 @@ public class QueueRepositoryImpl implements QueueRepository {
         return jpaRepository.findByUserId(userId).map(Queue::toDomain);
     }
 
+    @Override
+    public void saveAll(List<QueueDomain> queues) {
+        jpaRepository.saveAll(Queue.toEntity(queues));
+    }
+
+    @Override
+    public List<QueueDomain> findAllQueues() {
+        return jpaRepository.findAllQueues().stream().map(Queue::toDomain).toList();
+    }
+
 }

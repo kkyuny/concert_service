@@ -1,3 +1,6 @@
+-- Drop existing table
+DROP TABLE IF EXISTS queue;
+
 CREATE TABLE "user" (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     amount BIGINT DEFAULT 0,
@@ -8,8 +11,8 @@ CREATE TABLE queue (
     token VARCHAR(255) PRIMARY KEY,
     status VARCHAR(255) NOT NULL,
     user_id BIGINT NOT NULL,
-    valid_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    regi_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    valid_date TIMESTAMP,
+    regi_date TIMESTAMP
 );
 
 CREATE TABLE concert (
