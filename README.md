@@ -3,6 +3,8 @@
  1) 현재 내 대기순번 조회
   - 이유: 콘서트 예약 시 다수의 사용자가 대기 상태를 확인하기 위해서 수 많은 요청을 할 수 있을 것이라고 생각
   - 인덱싱 전 실행결과
-    ![image](https://github.com/user-attachments/assets/f049dd6c-18a6-43d6-8975-ae5596997d01)
+    ![스크린샷 2024-08-09 오전 12 25 41](https://github.com/user-attachments/assets/2d9641fc-0638-48b8-b4b3-714279c84274)
+
+
   
  2) 예약 가능한 콘서트 좌석 조회 
