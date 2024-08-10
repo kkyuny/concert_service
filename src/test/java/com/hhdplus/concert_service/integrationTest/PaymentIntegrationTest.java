@@ -61,8 +61,6 @@ class PaymentFacadeIntegrationTest {
 
     private ConcertSchedule testConcertSchedule;
 
-    private ConcertReservation reservation;
-
     private UserDomain testUser;
 
     @BeforeEach
@@ -130,9 +128,9 @@ class PaymentFacadeIntegrationTest {
         assertThat(result.getConcertId()).isEqualTo(testConcert.getId());
 
         // 결제 후 예약 상태가 "paid"로 변경되었는지 확인
-        ConcertReservation updatedReservation = concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(
+        Optional<ConcertReservation> updatedReservation = concertReservationJpaRepository.findUserReservationByConcertIdAndDateAndSeatNo(
                 result.getConcertId(), result.getConcertDate(), result.getSeatNo());
-        assertThat(updatedReservation.getStatus()).isEqualTo("paid");
+        assertThat(updatedReservation.get().getStatus()).isEqualTo("paid");
 
         // 큐가 삭제되었는지 확인
         assertThat(queueJpaRepository.findById("test-token")).isEmpty();

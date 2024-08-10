@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -27,6 +26,7 @@ public class UserService {
                 .orElseThrow(() -> new InvalidReqBodyException("USER_NOT_FOUND"));
     }
 
+    @Transactional
     public UserDomain chargeAmountUser(UserDomain user, Long amount) {
         user.chargePoint(amount);
 
@@ -40,13 +40,14 @@ public class UserService {
         }
     }
 
+    @Transactional
     public UserDomain useAmountUser(Long userId, Long price) {
-        // 비관적 잠금을 사용하여 사용자 엔티티 조회
-        UserDomain user = userRepository.findUserByIdWithPessimisticWrite(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        user.usePoint(price);
-
         try {
+            // 비관적 잠금을 사용하여 사용자 엔티티 조회
+            UserDomain user = userRepository.findUserByIdWithPessimisticWrite(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            user.usePoint(price);
+
             return userRepository.save(user);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
