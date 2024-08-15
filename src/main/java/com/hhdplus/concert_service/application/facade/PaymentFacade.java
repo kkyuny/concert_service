@@ -14,6 +14,7 @@ import com.hhdplus.concert_service.business.service.PaymentService;
 import com.hhdplus.concert_service.business.service.QueueService;
 import com.hhdplus.concert_service.business.service.UserService;
 import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
+import com.hhdplus.concert_service.infrastructure.entity.PaymentOutbox;
 import com.hhdplus.concert_service.interfaces.common.exception.BadRequestException;
 import com.hhdplus.concert_service.interfaces.common.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
@@ -81,11 +82,11 @@ public class PaymentFacade {
                         .status("INIT")                      // 상태
                         .build();
 
-                paymentMessageOutboxWriter.save(message);
-
+                PaymentOutbox savedEntity = paymentMessageOutboxWriter.save(message);
+                message.setId(savedEntity.getId());
                 // 예약완료 이벤트 발행
                 paymentMessageSender.send(message);
-                // paymentEventPublisher.savePaymentHistory(paymentResult); // 기존
+                // paymentEventPublisher.savePaymentHistory(paymentResult);
 
                 return PaymentFacadeDto.builder()
                         .userId(paymentResult.getUserId())

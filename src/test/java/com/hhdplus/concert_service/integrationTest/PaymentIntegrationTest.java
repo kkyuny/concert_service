@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -152,8 +153,9 @@ class PaymentIntegrationTest {
 
     @Test
     @DisplayName("INIT 상태 메시지의 PUBLISHED 상태 전환 테스트")
-    void messagePublishedStatusTest() throws JsonProcessingException {
+    void messagePublishedStatusTest() throws JsonProcessingException, InterruptedException, ExecutionException {
         PaymentMessage message = PaymentMessage.builder()
+                .id(1L)
                 .userId(testUser.getUserId())
                 .price(150L)
                 .status("INIT")

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.concurrent.ExecutionException;
+
 @Component
 public class PaymentEventListener {
 
@@ -43,7 +45,7 @@ public class PaymentEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void sendMessage(PaymentEvent event) {
+    public void sendMessage(PaymentEvent event) throws JsonProcessingException, InterruptedException, ExecutionException {
         PaymentMessage message = PaymentMessage.builder()
                 .userId(event.getUserId())
                 .price(event.getPrice())

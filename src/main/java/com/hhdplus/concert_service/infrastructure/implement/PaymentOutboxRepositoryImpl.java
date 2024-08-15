@@ -23,22 +23,24 @@ public class PaymentOutboxRepositoryImpl implements PaymentMessageOutboxWriter {
     private final PaymentOutboxJpaRepository jpaRepository;
 
     @Override
-    public void save(PaymentMessage message) throws JsonProcessingException {
+    public PaymentOutbox save(PaymentMessage message) throws JsonProcessingException {
         PaymentOutbox entity = new PaymentOutbox();
+        entity.setId(message.getId());
         entity.setMessage(objectMapper.writeValueAsString(message));
         entity.setStatus("INIT");
         entity.setCreateDate(LocalDateTime.now());
 
-        jpaRepository.save(entity);
+        return jpaRepository.save(entity);
     }
 
     @Override
-    public void complete(PaymentMessage message) {
+    public PaymentOutbox complete(PaymentMessage message) {
         PaymentOutbox entity = jpaRepository.findById(message.getId()).orElseThrow();
+        entity.setId(message.getId());
         entity.setStatus("PUBLISHED");
         entity.setUpdateDate(LocalDateTime.now());
 
-        jpaRepository.save(entity);
+        return jpaRepository.save(entity);
     }
 
     @Override
