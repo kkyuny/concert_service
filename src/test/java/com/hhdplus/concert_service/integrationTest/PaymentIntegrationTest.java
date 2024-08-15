@@ -143,10 +143,10 @@ class PaymentIntegrationTest {
         // 큐가 삭제되었는지 확인
         assertThat(queueJpaRepository.findById("test-token")).isEmpty();
 
-        // 아웃박스에 메시지가 "INIT" 상태로 저장되었는지 확인
         List<PaymentOutbox> outboxMessages = paymentOutboxJpaRepository.findAll();
         assertThat(outboxMessages).isNotEmpty();
 
+        // 아웃박스에 메시지가 "INIT" 상태로 저장되었는지 확인
         PaymentOutbox savedMessage = outboxMessages.get(0);
         assertThat(savedMessage.getStatus()).isEqualTo("INIT");
     }
@@ -162,17 +162,17 @@ class PaymentIntegrationTest {
                 .build();
         paymentMessageOutboxWriter.save(message);
 
-        // 아웃박스에 저장된 메시지 조회
+        // 아웃박스에 저장된 메시지 조회.
         List<PaymentOutbox> outboxMessages = paymentOutboxJpaRepository.findAll();
         assertThat(outboxMessages).isNotEmpty();
 
         PaymentOutbox sentMessage = outboxMessages.get(0);
         assertThat(sentMessage.getStatus()).isEqualTo("INIT");
 
-        // 메시지를 발행하는 로직을 직접 실행하여 상태를 변경
+        // 메시지를 발행하는 로직을 직접 실행하여 상태를 변경.
         paymentMessageSender.send(message);
 
-        // 상태가 "PUBLISHED"로 변경되었는지 확인
+        // 상태가 "PUBLISHED"로 변경되었는지 확인.
         PaymentOutbox updatedMessage = paymentOutboxJpaRepository.findById(message.getId()).orElseThrow();
         assertThat(updatedMessage.getStatus()).isEqualTo("PUBLISHED");
     }

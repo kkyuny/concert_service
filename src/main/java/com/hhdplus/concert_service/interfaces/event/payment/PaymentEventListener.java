@@ -36,6 +36,7 @@ public class PaymentEventListener {
         paymentService.savePaymentHistory(PaymentHistory.toDomain(paymentsHistory));
     }
 
+    // PaymentFacade의 paymentEventPublisher.createOutboxMessage(event) 실행
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void createOutboxMessage(PaymentEvent event) throws JsonProcessingException {
         PaymentMessage message = PaymentMessage.builder()
@@ -47,6 +48,7 @@ public class PaymentEventListener {
         paymentMessageOutboxWriter.save(message);
     }
 
+    // PaymentFacade의 sendMessage(PaymentEvent event) 실행
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendMessage(PaymentEvent event) throws JsonProcessingException, InterruptedException, ExecutionException {
