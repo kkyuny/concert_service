@@ -45,7 +45,7 @@ public class ConcertLoadTest {
         LOGGER.info("setUp 메서드 시작");
 
         // 100개의 콘서트, 각 콘서트마다 10개의 날짜, 각 날짜마다 10개의 좌석을 설정
-        for (long concertId = 1L; concertId <= 100L; concertId++) {
+        for (long concertId = 1L; concertId <= 1000L; concertId++) {
             long cid = random.nextInt(100) + 1;
             for (int day = 1; day <= 10; day++) {
                 int rday = random.nextInt(10) + 1;
@@ -73,7 +73,7 @@ public class ConcertLoadTest {
         LOGGER.info("테스트 시작 시간 : {}", testStart);
 
         // Given: 콘서트 ID와 콘서트 날짜
-        int numberOfUsers = 3000;
+        int numberOfUsers = 5000;
         Long concertId = 5L;
         LocalDateTime concertDate = LocalDateTime.of(2024, 8, 1, 19, 0);
 

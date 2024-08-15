@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Table(name = "concert_reservation", indexes = {
         @Index(name = "idx_concert_reservation_concert_id", columnList = "concertId"),
         @Index(name = "idx_concert_reservation_concert_date", columnList = "concertDate"),
-        @Index(name = "idx_concert_reservation_concert_id_concert_date", columnList = "concertId, concertDate") // 복합 인덱스 추가
+        @Index(name = "idx_concert_reservation_concert_id_concert_date", columnList = "concertDate, concertId") // 복합 인덱스 추가
 })
 @Getter
 @Setter

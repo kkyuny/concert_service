@@ -5,6 +5,7 @@ import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.domain.PaymentDomain;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
+import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
 import com.hhdplus.concert_service.business.service.ConcertService;
 import com.hhdplus.concert_service.business.service.PaymentService;
 import com.hhdplus.concert_service.business.service.QueueService;
@@ -15,6 +16,7 @@ import com.hhdplus.concert_service.interfaces.common.exception.InternalServerErr
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -35,6 +37,10 @@ public class PaymentFacade {
     @Autowired
     QueueService queueService;
 
+    @Autowired
+    PaymentEventPublisher paymentEventPublisher;
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
         // 예약 정보 조회
         Optional<ConcertDomain> reservationOpt = concertService.getUserReservation(PaymentFacadeDto.toConcertDomain(dto));
@@ -58,6 +64,12 @@ public class PaymentFacade {
                 String token = queue.get().getToken();
                 queueService.deleteQueue(token);
 
+                // outbox 저장
+
+
+                // 예약완료 이벤트 발행
+                paymentEventPublisher.savePaymentHistory(paymentResult);
+
                 return PaymentFacadeDto.builder()
                         .userId(paymentResult.getUserId())
                         .amount(paymentResult.getAmount())
@@ -66,7 +78,6 @@ public class PaymentFacade {
                         .seatNo(paymentResult.getSeatNo())
                         .build();
             } catch (Exception e) {
-                // 보상 트랜잭션 필요
                 throw new InternalServerErrorException("Seat reservation failed");
             }
         } else {
