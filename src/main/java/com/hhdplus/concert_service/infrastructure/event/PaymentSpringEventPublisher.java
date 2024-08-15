@@ -1,6 +1,7 @@
 package com.hhdplus.concert_service.infrastructure.event;
 
 import com.hhdplus.concert_service.business.domain.PaymentDomain;
+import com.hhdplus.concert_service.business.event.PaymentEvent;
 import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
 import com.hhdplus.concert_service.infrastructure.entity.PaymentHistory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,5 +19,15 @@ public class PaymentSpringEventPublisher implements PaymentEventPublisher {
     @Override
     public void savePaymentHistory(PaymentDomain paymentsHistory) {
         applicationEventPublisher.publishEvent(PaymentHistory.toEntity(paymentsHistory));
+    }
+
+    @Override
+    public void createOutboxMessage(PaymentEvent event) {
+        applicationEventPublisher.publishEvent(event);
+    }
+
+    @Override
+    public void sendMessage(PaymentEvent event) {
+        applicationEventPublisher.publishEvent(event);
     }
 }

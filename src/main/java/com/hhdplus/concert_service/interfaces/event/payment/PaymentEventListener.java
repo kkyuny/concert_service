@@ -22,8 +22,12 @@ public class PaymentEventListener {
     private PaymentMessageOutboxWriter paymentMessageOutboxWriter;
     @Autowired
     private PaymentMessageSender paymentMessageSender;
-    @Autowired
-    private PaymentService paymentService;
+
+    private final PaymentService paymentService;
+
+    public PaymentEventListener(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -47,6 +51,7 @@ public class PaymentEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendMessage(PaymentEvent event) throws JsonProcessingException, InterruptedException, ExecutionException {
         PaymentMessage message = PaymentMessage.builder()
+                .id(event.getId())
                 .userId(event.getUserId())
                 .price(event.getPrice())
                 .status("INIT")
@@ -54,5 +59,4 @@ public class PaymentEventListener {
 
         paymentMessageSender.send(message);
     }
-
 }

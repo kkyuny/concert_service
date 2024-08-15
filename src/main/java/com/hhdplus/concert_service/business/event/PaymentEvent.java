@@ -11,4 +11,5 @@ public class PaymentEvent {
     private Long id;
     private Long userId;
     private Long price;
+    private String status;
 }

@@ -19,6 +19,7 @@ public class PaymentKafkaMessageSender implements PaymentMessageSender {
     @Autowired
     private ObjectMapper objectMapper;
 
+    // 이벤트 send
     @Override
     public void send(PaymentMessage message) throws JsonProcessingException, InterruptedException, ExecutionException {
         String PAYMENT_TOPIC = "Payment";
