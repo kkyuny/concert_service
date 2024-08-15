@@ -6,6 +6,8 @@ import com.hhdplus.concert_service.business.domain.PaymentDomain;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
+import com.hhdplus.concert_service.business.message.PaymentMessage;
+import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
 import com.hhdplus.concert_service.business.service.ConcertService;
 import com.hhdplus.concert_service.business.service.PaymentService;
 import com.hhdplus.concert_service.business.service.QueueService;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -39,6 +42,9 @@ public class PaymentFacade {
 
     @Autowired
     PaymentEventPublisher paymentEventPublisher;
+
+    @Autowired
+    PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
@@ -64,8 +70,14 @@ public class PaymentFacade {
                 String token = queue.get().getToken();
                 queueService.deleteQueue(token);
 
-                // outbox 저장
+                // outbox 생성
+                PaymentMessage message = PaymentMessage.builder()
+                        .userId(user.getUserId())      // 사용자 ID
+                        .price(paymentResult.getPrice())      // 결제 금액
+                        .status("INIT")                      // 상태
+                        .build();
 
+                paymentMessageOutboxWriter.save(message);
 
                 // 예약완료 이벤트 발행
                 paymentEventPublisher.savePaymentHistory(paymentResult);

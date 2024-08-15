@@ -29,6 +29,9 @@ dependencies {
 
 	// implementation 'mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+
 }
 
 tasks.named('test') {

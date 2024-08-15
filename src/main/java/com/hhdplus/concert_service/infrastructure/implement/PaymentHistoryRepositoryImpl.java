@@ -1,6 +1,7 @@
 package com.hhdplus.concert_service.infrastructure.implement;
 
 import com.hhdplus.concert_service.business.domain.PaymentDomain;
+import com.hhdplus.concert_service.business.repository.PaymentHistoryRepository;
 import com.hhdplus.concert_service.business.repository.PaymentRepository;
 import com.hhdplus.concert_service.infrastructure.entity.Payment;
 import com.hhdplus.concert_service.infrastructure.repository.PaymentHistoryJpaRepository;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PaymentHistoryRepositoryImpl implements PaymentRepository {
+public class PaymentHistoryRepositoryImpl implements PaymentHistoryRepository {
 
     private final PaymentHistoryJpaRepository jpaRepository;
 
