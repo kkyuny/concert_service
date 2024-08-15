@@ -5,6 +5,7 @@ import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.domain.PaymentDomain;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
+import com.hhdplus.concert_service.business.event.PaymentEvent;
 import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
 import com.hhdplus.concert_service.business.message.PaymentMessage;
 import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
@@ -15,6 +16,7 @@ import com.hhdplus.concert_service.business.service.QueueService;
 import com.hhdplus.concert_service.business.service.UserService;
 import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
 import com.hhdplus.concert_service.infrastructure.entity.PaymentOutbox;
+import com.hhdplus.concert_service.infrastructure.repository.PaymentOutboxJpaRepository;
 import com.hhdplus.concert_service.interfaces.common.exception.BadRequestException;
 import com.hhdplus.concert_service.interfaces.common.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
@@ -45,12 +47,6 @@ public class PaymentFacade {
     @Autowired
     PaymentEventPublisher paymentEventPublisher;
 
-    @Autowired
-    PaymentMessageSender paymentMessageSender;
-
-    @Autowired
-    PaymentMessageOutboxWriter paymentMessageOutboxWriter;
-
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
         // 예약 정보 조회
@@ -75,18 +71,16 @@ public class PaymentFacade {
                 String token = queue.get().getToken();
                 queueService.deleteQueue(token);
 
-                // outbox 생성
-                PaymentMessage message = PaymentMessage.builder()
+                // outbox 생성 및 이벤트 send
+                PaymentEvent event = PaymentEvent.builder()
                         .userId(user.getUserId())      // 사용자 ID
                         .price(paymentResult.getAmount())      // 결제 금액
                         .status("INIT")                      // 상태
                         .build();
 
-                PaymentOutbox savedEntity = paymentMessageOutboxWriter.save(message);
-                message.setId(savedEntity.getId());
-                // 예약완료 이벤트 발행
-                paymentMessageSender.send(message);
-                // paymentEventPublisher.savePaymentHistory(paymentResult);
+                //paymentEventPublisher.savePaymentHistory(paymentResult);
+                paymentEventPublisher.createOutboxMessage(event);
+                paymentEventPublisher.sendMessage(event);
 
                 return PaymentFacadeDto.builder()
                         .userId(paymentResult.getUserId())
