@@ -1,15 +1,16 @@
 package com.hhdplus.concert_service.integrationTest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hhdplus.concert_service.application.dto.PaymentFacadeDto;
 import com.hhdplus.concert_service.application.facade.PaymentFacade;
 import com.hhdplus.concert_service.business.domain.ConcertDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
+import com.hhdplus.concert_service.business.message.PaymentMessage;
+import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
+import com.hhdplus.concert_service.business.message.PaymentMessageSender;
 import com.hhdplus.concert_service.business.repository.UserRepository;
 import com.hhdplus.concert_service.business.service.*;
-import com.hhdplus.concert_service.infrastructure.entity.Concert;
-import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
-import com.hhdplus.concert_service.infrastructure.entity.ConcertSchedule;
-import com.hhdplus.concert_service.infrastructure.entity.Queue;
+import com.hhdplus.concert_service.infrastructure.entity.*;
 import com.hhdplus.concert_service.infrastructure.repository.*;
 import com.hhdplus.concert_service.interfaces.common.exception.BadRequestException;
 import jakarta.persistence.EntityManager;
@@ -31,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-class PaymentFacadeIntegrationTest {
+class PaymentIntegrationTest {
 
     @Autowired
     private PaymentFacade paymentFacade;
@@ -52,7 +53,13 @@ class PaymentFacadeIntegrationTest {
     private QueueJpaRepository queueJpaRepository;
 
     @Autowired
-    private UserJpaRepository userJpaRepository;
+    private PaymentOutboxJpaRepository paymentOutboxJpaRepository;
+
+    @Autowired
+    PaymentMessageSender paymentMessageSender;
+
+    @Autowired
+    PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -66,7 +73,7 @@ class PaymentFacadeIntegrationTest {
     @BeforeEach
     void setUp() {
         // 유저 엔티티 생성 및 저장
-        testUser = UserDomain.builder().userId(0L).amount(1000L).build();
+        testUser = UserDomain.builder().userId(1L).amount(1000L).build();
         testUser = userRepository.save(testUser);
 
         // 콘서트 엔티티 생성 및 저장
@@ -109,7 +116,7 @@ class PaymentFacadeIntegrationTest {
     }
 
     @Test
-    @DisplayName("결제 성공 테스트")
+    @DisplayName("결제 성공 테스트(outbox status -> init)")
     void executePaymentSuccessTest() {
         // 결제에 필요한 PaymentFacadeDto 생성
         PaymentFacadeDto dto = PaymentFacadeDto.builder()
@@ -134,5 +141,37 @@ class PaymentFacadeIntegrationTest {
 
         // 큐가 삭제되었는지 확인
         assertThat(queueJpaRepository.findById("test-token")).isEmpty();
+
+        // 아웃박스에 메시지가 "INIT" 상태로 저장되었는지 확인
+        List<PaymentOutbox> outboxMessages = paymentOutboxJpaRepository.findAll();
+        assertThat(outboxMessages).isNotEmpty();
+
+        PaymentOutbox savedMessage = outboxMessages.get(0);
+        assertThat(savedMessage.getStatus()).isEqualTo("INIT");
+    }
+
+    @Test
+    @DisplayName("INIT 상태 메시지의 PUBLISHED 상태 전환 테스트")
+    void messagePublishedStatusTest() throws JsonProcessingException {
+        PaymentMessage message = PaymentMessage.builder()
+                .userId(testUser.getUserId())
+                .price(150L)
+                .status("INIT")
+                .build();
+        paymentMessageOutboxWriter.save(message);
+
+        // 아웃박스에 저장된 메시지 조회
+        List<PaymentOutbox> outboxMessages = paymentOutboxJpaRepository.findAll();
+        assertThat(outboxMessages).isNotEmpty();
+
+        PaymentOutbox sentMessage = outboxMessages.get(0);
+        assertThat(sentMessage.getStatus()).isEqualTo("INIT");
+
+        // 메시지를 발행하는 로직을 직접 실행하여 상태를 변경
+        paymentMessageSender.send(message);
+
+        // 상태가 "PUBLISHED"로 변경되었는지 확인
+        PaymentOutbox updatedMessage = paymentOutboxJpaRepository.findById(message.getId()).orElseThrow();
+        assertThat(updatedMessage.getStatus()).isEqualTo("PUBLISHED");
     }
 }

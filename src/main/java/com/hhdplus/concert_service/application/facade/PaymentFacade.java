@@ -8,6 +8,7 @@ import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
 import com.hhdplus.concert_service.business.message.PaymentMessage;
 import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
+import com.hhdplus.concert_service.business.message.PaymentMessageSender;
 import com.hhdplus.concert_service.business.service.ConcertService;
 import com.hhdplus.concert_service.business.service.PaymentService;
 import com.hhdplus.concert_service.business.service.QueueService;
@@ -44,6 +45,9 @@ public class PaymentFacade {
     PaymentEventPublisher paymentEventPublisher;
 
     @Autowired
+    PaymentMessageSender paymentMessageSender;
+
+    @Autowired
     PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -73,14 +77,15 @@ public class PaymentFacade {
                 // outbox 생성
                 PaymentMessage message = PaymentMessage.builder()
                         .userId(user.getUserId())      // 사용자 ID
-                        .price(paymentResult.getPrice())      // 결제 금액
+                        .price(paymentResult.getAmount())      // 결제 금액
                         .status("INIT")                      // 상태
                         .build();
 
                 paymentMessageOutboxWriter.save(message);
 
                 // 예약완료 이벤트 발행
-                paymentEventPublisher.savePaymentHistory(paymentResult);
+                paymentMessageSender.send(message);
+                // paymentEventPublisher.savePaymentHistory(paymentResult); // 기존
 
                 return PaymentFacadeDto.builder()
                         .userId(paymentResult.getUserId())

@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class ChargeFacadeIntegrationTest {
+class ChargeIntegrationTest {
 
     @Autowired
     private ChargeFacade chargeFacade;

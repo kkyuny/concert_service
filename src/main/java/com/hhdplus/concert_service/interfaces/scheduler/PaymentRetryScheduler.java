@@ -26,11 +26,13 @@ public class PaymentRetryScheduler {
     @Autowired
     private PaymentMessageSender paymentMessageSender;
     @Autowired
+    private PaymentMessageOutboxWriter paymentMessageOutboxWriter;
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void retryPendingMessages() {
-        List<PaymentOutbox> pendingMessages = paymentOutboxJpaRepository.findByStatus("INIT");
+        List<PaymentOutbox> pendingMessages = paymentMessageOutboxWriter.findByStatus("INIT");
 
         for (PaymentOutbox message : pendingMessages) {
             try {

@@ -13,7 +13,7 @@ public class ConcertScheduler {
     @Autowired
     private ConcertFacade concertFacade;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 10000)
     public void cancelReservation() {
         concertFacade.cancelReservation();
     }
