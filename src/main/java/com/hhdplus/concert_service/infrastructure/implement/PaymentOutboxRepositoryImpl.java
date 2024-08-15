@@ -22,7 +22,7 @@ public class PaymentOutboxRepositoryImpl implements PaymentMessageOutboxWriter {
 
     private final PaymentOutboxJpaRepository jpaRepository;
 
-    // outbox -> init으로 저장
+    // PaymentEventListener -> createOutboxMessage(PaymentEvent event) 실행
     @Override
     public PaymentOutbox save(PaymentMessage message) throws JsonProcessingException {
         PaymentOutbox entity = new PaymentOutbox();

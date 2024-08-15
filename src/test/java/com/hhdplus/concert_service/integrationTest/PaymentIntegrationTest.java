@@ -143,10 +143,10 @@ class PaymentIntegrationTest {
         // 큐가 삭제되었는지 확인
         assertThat(queueJpaRepository.findById("test-token")).isEmpty();
 
-        // 아웃박스에 메시지가 "INIT" 상태로 저장되었는지 확인
         List<PaymentOutbox> outboxMessages = paymentOutboxJpaRepository.findAll();
         assertThat(outboxMessages).isNotEmpty();
 
+        // 아웃박스에 메시지가 "INIT" 상태로 저장되었는지 확인
         PaymentOutbox savedMessage = outboxMessages.get(0);
         assertThat(savedMessage.getStatus()).isEqualTo("INIT");
     }
