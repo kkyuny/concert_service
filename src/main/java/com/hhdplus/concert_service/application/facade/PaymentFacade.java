@@ -47,6 +47,9 @@ public class PaymentFacade {
     @Autowired
     PaymentEventPublisher paymentEventPublisher;
 
+    @Autowired
+    PaymentMessageOutboxWriter paymentMessageOutboxWriter;
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
         // 예약 정보 조회
@@ -71,17 +74,27 @@ public class PaymentFacade {
                 String token = queue.get().getToken();
                 queueService.deleteQueue(token);
 
-                PaymentEvent event = PaymentEvent.builder()
-                        .userId(user.getUserId())      // 사용자 ID
-                        .price(paymentResult.getAmount())      // 결제 금액
-                        .status("INIT")                      // 상태
-                        .build();
+
 
                 //paymentEventPublisher.savePaymentHistory(paymentResult);
                 /*
                     outbox 저장 이벤트 발행 후 kakfa에서 메세지 send.
                  */
-                paymentEventPublisher.createOutboxMessage(event);
+                PaymentMessage message = PaymentMessage.builder()
+                        .userId(user.getUserId())      // 사용자 ID
+                        .price(paymentResult.getAmount())      // 결제 금액
+                        .status("INIT")                      // 상태
+                        .build();
+
+                PaymentOutbox saveMessage = paymentMessageOutboxWriter.save(message);
+
+                PaymentEvent event = PaymentEvent.builder()
+                        .id(saveMessage.getId())
+                        .userId(user.getUserId())      // 사용자 ID
+                        .price(paymentResult.getAmount())      // 결제 금액
+                        .status("INIT")                      // 상태
+                        .build();
+
                 paymentEventPublisher.sendMessage(event);
 
                 return PaymentFacadeDto.builder()
