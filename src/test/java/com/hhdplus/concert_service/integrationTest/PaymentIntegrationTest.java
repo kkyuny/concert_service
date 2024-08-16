@@ -169,7 +169,7 @@ class PaymentIntegrationTest {
         // 메시지를 발행하는 로직을 직접 실행하여 상태를 변경
         paymentMessageSender.send(message);
 
-        // 상태가 "PUBLISHED"로 변경되었는지 확인
+        // 상태가 "PUBLISHED"로 변경되었는지 확인.
         PaymentOutbox updatedMessage = paymentOutboxJpaRepository.findById(message.getId()).orElseThrow();
         assertThat(updatedMessage.getStatus()).isEqualTo("PUBLISHED");
     }

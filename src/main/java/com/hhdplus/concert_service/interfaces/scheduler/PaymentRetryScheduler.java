@@ -30,7 +30,7 @@ public class PaymentRetryScheduler {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // outbox의 status가 init 상태인 메세지를 찾아 send 후 published로 status 변경.
+    // outbox의 status가 init 상태인 메세지를 찾아 send 후 published로 status 변경
     @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void retryPendingMessages() {
         List<PaymentOutbox> pendingMessages = paymentMessageOutboxWriter.findByStatus("INIT");
