@@ -48,7 +48,7 @@ public class PaymentEventListener {
         paymentMessageOutboxWriter.save(message);
     }
 
-    // PaymentFacade의 sendMessage(PaymentEvent event) 실행.
+    // PaymentFacade의 sendMessage(PaymentEvent event) 실행
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendMessage(PaymentEvent event) throws JsonProcessingException, InterruptedException, ExecutionException {

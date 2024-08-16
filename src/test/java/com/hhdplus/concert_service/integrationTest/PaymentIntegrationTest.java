@@ -143,7 +143,7 @@ class PaymentIntegrationTest {
         // 큐가 삭제되었는지 확인
         assertThat(queueJpaRepository.findById("test-token")).isEmpty();
 
-        //// 아웃박스에 메시지가 저장되었는지 확인
+        //// 아웃박스에 메시지가 저장되었는지 확인(메세지 저장은 성공)
         List<PaymentOutbox> outboxMessages = paymentOutboxJpaRepository.findAll();
         assertThat(outboxMessages).isNotEmpty();
     }

@@ -26,6 +26,7 @@ public class PaymentSpringEventPublisher implements PaymentEventPublisher {
         applicationEventPublisher.publishEvent(event);
     }
 
+    // 이벤트 리스너(인터페이스) send가 되어야함.
     @Override
     public void sendMessage(PaymentEvent event) {
         applicationEventPublisher.publishEvent(event);

@@ -73,13 +73,9 @@ public class PaymentFacade {
                 }
                 String token = queue.get().getToken();
                 queueService.deleteQueue(token);
-
-
-
                 //paymentEventPublisher.savePaymentHistory(paymentResult);
-                /*
-                    outbox 저장 이벤트 발행 후 kakfa에서 메세지 send.
-                 */
+
+                // outbox 메세지 저장
                 PaymentMessage message = PaymentMessage.builder()
                         .userId(user.getUserId())      // 사용자 ID
                         .price(paymentResult.getAmount())      // 결제 금액
@@ -88,6 +84,7 @@ public class PaymentFacade {
 
                 PaymentOutbox saveMessage = paymentMessageOutboxWriter.save(message);
 
+                // 이벤트 발행(인프라) -> 이벤트 수신(인터페이스) -> kakfa에서 메세지 send(인프라).
                 PaymentEvent event = PaymentEvent.builder()
                         .id(saveMessage.getId())
                         .userId(user.getUserId())      // 사용자 ID

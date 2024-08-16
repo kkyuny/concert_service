@@ -19,7 +19,7 @@ public class PaymentMessageConsumer {
         this.paymentMessageOutboxWriter = paymentMessageOutboxWriter;
     }
 
-    // kafka에서 메세지 send 시 실행.
+    // kafka에서 메세지 send 시 실행
     @KafkaListener(topics = "Payment", groupId = "group_1")
     void complete(String message) throws JsonProcessingException {
         PaymentMessage paymentMessage = objectMapper.readValue(message, PaymentMessage.class);
