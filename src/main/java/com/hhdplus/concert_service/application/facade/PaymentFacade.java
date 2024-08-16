@@ -79,7 +79,7 @@ public class PaymentFacade {
 
                 //paymentEventPublisher.savePaymentHistory(paymentResult);
                 /*
-                    outbox 저장 이벤트 발행 후 kakfa에서 메세지 send
+                    outbox 저장 이벤트 발행 후 kakfa에서 메세지 send.
                  */
                 paymentEventPublisher.createOutboxMessage(event);
                 paymentEventPublisher.sendMessage(event);
