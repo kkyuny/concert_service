@@ -34,7 +34,7 @@ public class PaymentOutboxRepositoryImpl implements PaymentMessageOutboxWriter {
         return jpaRepository.save(entity);
     }
 
-    // PaymentMessageConsumer -> complete(String message) 실행
+    // PaymentMessageConsumer -> complete(String message) 실행.
     @Override
     public PaymentOutbox complete(PaymentMessage message) {
         PaymentOutbox entity = jpaRepository.findById(message.getId()).orElseThrow();
