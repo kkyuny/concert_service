@@ -51,7 +51,7 @@ public class PaymentFacade {
     PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public PaymentFacadeDto executePayment(PaymentFacadeDto dto){
+    public PaymentFacadeDto executePayment(String token, PaymentFacadeDto dto){
         // 예약 정보 조회
         Optional<ConcertDomain> reservationOpt = concertService.getUserReservation(PaymentFacadeDto.toConcertDomain(dto));
 
@@ -67,12 +67,8 @@ public class PaymentFacade {
                 PaymentDomain paymentResult = paymentService.savePayment(PaymentFacadeDto.toDomain(dto));
 
                 concertService.changeConcertReserveToFinish(reservation);
-                Optional<QueueDomain> queue = queueService.findQueueByUserId(user.getUserId());
-                if (queue.isEmpty()) {
-                    throw new BadRequestException("Token not found");
-                }
-                String token = queue.get().getToken();
-                queueService.deleteQueue(token);
+                queueService.verifyToken(token);
+                queueService.expireToken(token);
                 //paymentEventPublisher.savePaymentHistory(paymentResult);
 
                 // outbox 메세지 저장

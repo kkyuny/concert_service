@@ -2,81 +2,44 @@ package com.hhdplus.concert_service.infrastructure.implement;
 
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.repository.QueueRepository;
-import com.hhdplus.concert_service.infrastructure.entity.Queue;
-import com.hhdplus.concert_service.infrastructure.repository.QueueJpaRepository;
+import com.hhdplus.concert_service.infrastructure.redis.QueueRedisRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class QueueRepositoryImpl implements QueueRepository {
-    private final QueueJpaRepository jpaRepository;
+    private final QueueRedisRepository redisRepository;
 
     @Override
-    public QueueDomain save(QueueDomain queue) {
-        return Queue.toDomain(jpaRepository.save(Queue.toEntity(queue)));
+    public void save(QueueDomain queue) {
+        String token = queue.getToken();
+        redisRepository.addQueue(token);
     }
 
     @Override
-    public Optional<QueueDomain> findById(String token) {
-        return jpaRepository.findById(token).map(Queue::toDomain);
+    public Long getQueueOrder(String token) {
+        return redisRepository.getQueueOrder(token);
     }
 
     @Override
-    public List<QueueDomain> findActiveQueues(String token) {
-        return jpaRepository.findActiveQueues(token)
-                .stream()
-                .map(Queue::toDomain)
-                .collect(Collectors.toList());
+    public Boolean verifyToken(String token) {
+        return redisRepository.isTokenActive(token);
     }
 
     @Override
-    public List<QueueDomain> findActiveQueues() {
-        return jpaRepository.findActiveQueues()
-                .stream()
-                .map(Queue::toDomain)
-                .collect(Collectors.toList());
+    public void expireToken(String token) {
+        redisRepository.expireToken(token);
     }
 
     @Override
-    public List<QueueDomain> findWaitingQueuesBeforeMe(String token) {
-        return jpaRepository.findWaitingQueuesBeforeMe(token).stream()
-                .map(Queue::toDomain)
-                .collect(Collectors.toList());
+    public void activateTokens() {
+        redisRepository.activateTokens();
     }
 
     @Override
-    public List<QueueDomain> findWaitingUserCountToActive(Long availableCount) {
-        PageRequest pageable = PageRequest.of(0, availableCount.intValue());
-
-        return jpaRepository.findWaitingUserCountToActive(pageable).stream()
-                .map(Queue::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteById(String token) {
-        jpaRepository.deleteById(token);
-    }
-
-    @Override
-    public Optional<QueueDomain> findByUserId(Long userId) {
-        return jpaRepository.findByUserId(userId).map(Queue::toDomain);
-    }
-
-    @Override
-    public void saveAll(List<QueueDomain> queues) {
-        jpaRepository.saveAll(Queue.toEntity(queues));
-    }
-
-    @Override
-    public List<QueueDomain> findAllQueues() {
-        return jpaRepository.findAllQueues().stream().map(Queue::toDomain).toList();
+    public void expireTokens() {
+        redisRepository.expireTokens();
     }
 
 }

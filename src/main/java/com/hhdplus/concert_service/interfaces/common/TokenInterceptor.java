@@ -24,16 +24,9 @@ public class TokenInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws UnauthorizedException, ForbidenException {
 		LOGGER.info("ACCESS URI : " + request.getRequestURI());
 
-		QueueRequestDto queueRequestDto = new QueueRequestDto();
-		queueRequestDto.setToken(request.getHeader("authorization"));
+		String token = request.getHeader("authorization");
+		queueFacade.verifyToken(token); // token이 없으면 exception 발생
 
-		QueueFacadeDto checkResult = queueFacade.checkQueue(QueueFacadeDto.toFacadeDto(queueRequestDto));
-
-		if("active".equals(checkResult.getStatus()))
-			return true;
-		else if("waiting".equals(checkResult.getStatus()))
-			throw new ForbidenException("Waiting Queue is full.");
-		else
-			throw new UnauthorizedException("Your token is not valid.");
+		return true;
 	}
 }

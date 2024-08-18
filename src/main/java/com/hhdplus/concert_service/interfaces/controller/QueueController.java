@@ -6,6 +6,8 @@ import com.hhdplus.concert_service.interfaces.dto.request.QueueRequestDto;
 import com.hhdplus.concert_service.interfaces.dto.response.QueueResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +21,15 @@ public class QueueController {
 
     @PostMapping("/create")
     @Operation(summary = "토큰 생성")
-    public QueueResponseDto generateToken(@RequestBody QueueRequestDto dto) {
+    public QueueResponseDto createToken(@RequestBody QueueRequestDto dto) {
         return QueueResponseDto.toResponse(queueFacade.createToken(QueueFacadeDto.toFacadeDto(dto)));
     }
 
     @GetMapping("/check")
-    @Operation(summary = "Queue 상태 조회")
-    public QueueResponseDto checkQueue(@RequestBody QueueRequestDto dto) {
-        return QueueResponseDto.toResponse(queueFacade.checkQueue(QueueFacadeDto.toFacadeDto(dto)));
-    }
+    @Operation(summary = "Queue 순번 조회")
+    public QueueResponseDto checkQueue(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("authorization");
 
-    // 대기 숫자 조회
+        return QueueResponseDto.toResponse(queueFacade.getQueueOrder(token));
+    }
 }

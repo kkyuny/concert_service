@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "queue", indexes = {
-    @Index(name = "idx_queue_status", columnList = "status")
-})
 public class Queue {
     @Id
     @Column(name = "token")

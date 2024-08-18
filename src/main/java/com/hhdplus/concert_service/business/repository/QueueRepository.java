@@ -7,23 +7,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface QueueRepository {
-    QueueDomain save(QueueDomain queue);
+    void save(QueueDomain queue);
 
-    Optional<QueueDomain> findById(String token);
+    Long getQueueOrder(String token);
 
-    List<QueueDomain> findActiveQueues(String token);
+    Boolean verifyToken(String token);
 
-    List<QueueDomain> findActiveQueues();
+    void expireToken(String token);
 
-    List<QueueDomain> findWaitingQueuesBeforeMe(String token);
+    void activateTokens();
 
-    List<QueueDomain> findWaitingUserCountToActive(Long availableCount);
+    void expireTokens();
 
-    void deleteById(String token);
-
-    Optional<QueueDomain> findByUserId(Long userId);
-
-    void saveAll(List<QueueDomain> queues);
-
-    List<QueueDomain> findAllQueues();
 }
