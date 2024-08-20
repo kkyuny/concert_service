@@ -8,5 +8,5 @@ public interface PaymentEventPublisher {
 
     void createOutboxMessage(PaymentEvent message);
 
-    void sendMessage(PaymentEvent event);
+    void sendEvent(PaymentEvent event);
 }

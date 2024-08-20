@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,8 +27,8 @@ public class PaymentOutboxRepositoryImpl implements PaymentMessageOutboxWriter {
     @Override
     public PaymentOutbox save(PaymentMessage message) throws JsonProcessingException {
         PaymentOutbox entity = new PaymentOutbox();
-        entity.setId(message.getId());
-        entity.setMessage(objectMapper.writeValueAsString(message));
+        //entity.setMessage(objectMapper.writeValueAsString(message));
+        entity.setPaymentId(message.getPaymentId());
         entity.setStatus("INIT");
         entity.setCreateDate(LocalDateTime.now());
 
@@ -37,7 +38,8 @@ public class PaymentOutboxRepositoryImpl implements PaymentMessageOutboxWriter {
     // PaymentMessageConsumer -> complete(String message) 실행.
     @Override
     public PaymentOutbox complete(PaymentMessage message) {
-        PaymentOutbox entity = jpaRepository.findById(message.getId()).orElseThrow();
+        PaymentOutbox entity = jpaRepository.findByPaymentId(message.getPaymentId()).orElseThrow();
+
         entity.setId(message.getId());
         entity.setStatus("PUBLISHED");
         entity.setUpdateDate(LocalDateTime.now());
@@ -48,5 +50,9 @@ public class PaymentOutboxRepositoryImpl implements PaymentMessageOutboxWriter {
     @Override
     public List<PaymentOutbox> findByStatus(String init) {
         return jpaRepository.findByStatus(init);
+    }
+
+    public Optional<PaymentOutbox> findByPaymentId(Long paymentId) {
+        return jpaRepository.findByPaymentId(paymentId);
     }
 }

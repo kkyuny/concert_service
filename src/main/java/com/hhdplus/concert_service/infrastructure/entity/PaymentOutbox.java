@@ -19,7 +19,8 @@ public class PaymentOutbox {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Long userId;
+    private Long paymentId;
     private String message;
     private String status;
     private LocalDateTime createDate;

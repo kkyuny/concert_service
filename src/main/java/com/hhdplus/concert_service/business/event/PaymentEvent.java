@@ -10,6 +10,7 @@ import lombok.*;
 public class PaymentEvent {
     private Long id;
     private Long userId;
+    private Long paymentId;
     private Long price;
     private String status;
 }

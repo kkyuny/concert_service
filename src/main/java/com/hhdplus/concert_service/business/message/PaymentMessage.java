@@ -9,9 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PaymentMessage {
-    @JsonProperty("id")
     private Long id;
     private Long userId;
+    private Long paymentId;
     private Long price;
     private String status;
 }

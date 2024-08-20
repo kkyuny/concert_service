@@ -10,10 +10,7 @@ import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
 import com.hhdplus.concert_service.business.message.PaymentMessage;
 import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
 import com.hhdplus.concert_service.business.message.PaymentMessageSender;
-import com.hhdplus.concert_service.business.service.ConcertService;
-import com.hhdplus.concert_service.business.service.PaymentService;
-import com.hhdplus.concert_service.business.service.QueueService;
-import com.hhdplus.concert_service.business.service.UserService;
+import com.hhdplus.concert_service.business.service.*;
 import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
 import com.hhdplus.concert_service.infrastructure.entity.PaymentOutbox;
 import com.hhdplus.concert_service.infrastructure.repository.PaymentOutboxJpaRepository;
@@ -50,7 +47,10 @@ public class PaymentFacade {
     @Autowired
     PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Autowired
+    QueueRedisService queueRedisService;
+
+    @Transactional
     public PaymentFacadeDto executePayment(String token, PaymentFacadeDto dto){
         // 예약 정보 조회
         Optional<ConcertDomain> reservationOpt = concertService.getUserReservation(PaymentFacadeDto.toConcertDomain(dto));
@@ -67,28 +67,16 @@ public class PaymentFacade {
                 PaymentDomain paymentResult = paymentService.savePayment(PaymentFacadeDto.toDomain(dto));
 
                 concertService.changeConcertReserveToFinish(reservation);
-                queueService.verifyToken(token);
-                queueService.expireToken(token);
+                // queueRedisService.expireToken(token);
                 //paymentEventPublisher.savePaymentHistory(paymentResult);
 
-                // outbox 메세지 저장
-                PaymentMessage message = PaymentMessage.builder()
-                        .userId(user.getUserId())      // 사용자 ID
-                        .price(paymentResult.getAmount())      // 결제 금액
-                        .status("INIT")                      // 상태
-                        .build();
-
-                PaymentOutbox saveMessage = paymentMessageOutboxWriter.save(message);
-
-                // 이벤트 발행(인프라) -> 이벤트 수신(인터페이스) -> kakfa에서 메세지 send(인프라).
+                // 이벤트 발행
                 PaymentEvent event = PaymentEvent.builder()
-                        .id(saveMessage.getId())
                         .userId(user.getUserId())      // 사용자 ID
                         .price(paymentResult.getAmount())      // 결제 금액
-                        .status("INIT")                      // 상태
                         .build();
 
-                paymentEventPublisher.sendMessage(event);
+                paymentEventPublisher.sendEvent(event);
 
                 return PaymentFacadeDto.builder()
                         .userId(paymentResult.getUserId())

@@ -1,6 +1,6 @@
 package com.hhdplus.concert_service.infrastructure.redis;
 
-import com.hhdplus.concert_service.infrastructure.entity.Queue;
+import com.hhdplus.concert_service.business.repository.QueueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-public class QueueRedisRepository {
+public class QueueRedisRepository implements com.hhdplus.concert_service.business.repository.QueueRedisRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String QUEUE = "queue";

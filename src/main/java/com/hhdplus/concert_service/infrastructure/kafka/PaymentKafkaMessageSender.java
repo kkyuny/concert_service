@@ -24,6 +24,6 @@ public class PaymentKafkaMessageSender implements PaymentMessageSender {
     public void send(PaymentMessage message) throws JsonProcessingException, InterruptedException, ExecutionException {
         String PAYMENT_TOPIC = "Payment";
         String jsonMessage = objectMapper.writeValueAsString(message);
-        kafkaTemplate.send(PAYMENT_TOPIC, jsonMessage).get();
+        kafkaTemplate.send(PAYMENT_TOPIC, jsonMessage);
     }
 }

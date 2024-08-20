@@ -21,7 +21,6 @@ public class PaymentService {
 
     private final PaymentHistoryRepository paymentHistoryRepository;
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public PaymentDomain savePayment(PaymentDomain domain){
         try {
             return paymentRepository.save(domain);
@@ -34,7 +33,6 @@ public class PaymentService {
     }
 
     // event listener 에 의한 결제 히스토리 저장
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void savePaymentHistory(PaymentDomain domain) {
         try {
             paymentHistoryRepository.save(domain);

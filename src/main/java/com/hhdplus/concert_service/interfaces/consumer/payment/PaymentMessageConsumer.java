@@ -4,26 +4,31 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hhdplus.concert_service.business.message.PaymentMessage;
 import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
+import com.hhdplus.concert_service.business.tempSender.ExternalSender;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentMessageConsumer {
     @Autowired
     ObjectMapper objectMapper;
 
+    private final ExternalSender externalSender;
+
     private final PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
-    public PaymentMessageConsumer(PaymentMessageOutboxWriter paymentMessageOutboxWriter) {
-        this.paymentMessageOutboxWriter = paymentMessageOutboxWriter;
-    }
-
-    // kafka에서 메세지 send 시 실행
     @KafkaListener(topics = "Payment", groupId = "group_1")
-    void complete(String message) throws JsonProcessingException {
+    void processPaymentMessage(String message) throws JsonProcessingException {
         PaymentMessage paymentMessage = objectMapper.readValue(message, PaymentMessage.class);
 
+        // Outbox 업데이트
         paymentMessageOutboxWriter.complete(paymentMessage);
+
+        // 외부 발송 처리
+        externalSender.sendPaymentResult(paymentMessage);
     }
 }

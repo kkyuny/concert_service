@@ -7,6 +7,7 @@ import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
 import com.hhdplus.concert_service.business.message.PaymentMessageSender;
 import com.hhdplus.concert_service.business.service.PaymentService;
 import com.hhdplus.concert_service.infrastructure.entity.PaymentHistory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,25 +17,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.util.concurrent.ExecutionException;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentEventListener {
 
     @Autowired
     private PaymentMessageOutboxWriter paymentMessageOutboxWriter;
     @Autowired
     private PaymentMessageSender paymentMessageSender;
-
-    private final PaymentService paymentService;
-
-    public PaymentEventListener(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void savePaymentHistoryHandler(PaymentHistory paymentsHistory) {
-        // 결제 히스토리 저장
-        paymentService.savePaymentHistory(PaymentHistory.toDomain(paymentsHistory));
-    }
 
     // PaymentFacade의 paymentEventPublisher.createOutboxMessage(event) 실행.
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
@@ -56,7 +45,6 @@ public class PaymentEventListener {
                 .id(event.getId())
                 .userId(event.getUserId())
                 .price(event.getPrice())
-                .status("INIT")
                 .build();
 
         paymentMessageSender.send(message);

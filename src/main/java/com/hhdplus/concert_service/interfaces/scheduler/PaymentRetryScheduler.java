@@ -38,15 +38,13 @@ public class PaymentRetryScheduler {
         for (PaymentOutbox message : pendingMessages) {
             try {
                 // 메시지 전송
-                PaymentMessage retryMessage = objectMapper.readValue(message.getMessage(), PaymentMessage.class);
+                PaymentMessage retryMessage = PaymentMessage.builder()
+                        .userId(message.getUserId())
+                        .paymentId(message.getPaymentId())
+                        .status("INIT")
+                        .build();
 
                 paymentMessageSender.send(retryMessage);
-
-                // 성공적으로 전송되면 상태를 업데이트
-                message.setStatus("PUBLISHED");
-
-                paymentOutboxJpaRepository.save(message);
-                logger.info("Successfully resent message with ID: " + message.getId());
             } catch (Exception e) {
                 logger.error("Failed to resend message with ID: " + message.getId(), e);
             }

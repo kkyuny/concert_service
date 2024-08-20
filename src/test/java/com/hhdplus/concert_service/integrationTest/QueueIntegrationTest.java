@@ -1,6 +1,7 @@
-package com.hhdplus.concert_service.application.facade;
+package com.hhdplus.concert_service.integrationTest;
 
 import com.hhdplus.concert_service.application.dto.QueueFacadeDto;
+import com.hhdplus.concert_service.application.facade.QueueFacade;
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.service.QueueService;
@@ -14,7 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class QueueFacadeIntegrationTest {
+class QueueIntegrationTest {
 
     private static final String QUEUE = "queue";
     private static final String ACTIVE_TOKEN = "active";
@@ -77,7 +78,7 @@ class QueueFacadeIntegrationTest {
     @Test
     void expireTokens() throws InterruptedException {
         String token1 = "expiredToken";
-        String token2 = "activeToken";
+        String token2 = "waitingToken";
 
         // 만료된 토큰 생성 (만료 시간보다 이전)
         long expiredTimestamp = System.currentTimeMillis() - ((MAX_ACTIVE_MINUTES + 1) * 60 * 1000);
