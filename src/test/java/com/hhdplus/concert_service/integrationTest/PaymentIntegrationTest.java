@@ -130,13 +130,13 @@ class PaymentIntegrationTest {
         // assertThat(redisTemplate.hasKey(testToken)).isFalse();
 
         // 아웃박스에 저장된 메시지 조회
-        ///PaymentOutbox outboxMessage = paymentOutboxJpaRepository.findByPaymentId();
-        //assertThat(outboxMessage).isNotNull();
+        Optional<PaymentOutbox> outboxMessage = paymentOutboxJpaRepository.findByPaymentId(result.getId());
+        assertThat(outboxMessage).isNotNull();
 
-        //PaymentOutbox sentMessage = outboxMessages.get(0);
+        PaymentOutbox sentMessage = outboxMessage.get();
 
         // 상태가 "PUBLISHED"로 변경되었는지 확인.
-        //PaymentOutbox updatedMessage = paymentOutboxJpaRepository.findById(sentMessage.getId()).orElseThrow();
-        //assertThat(updatedMessage.getStatus()).isEqualTo("PUBLISHED");
+        PaymentOutbox updatedMessage = paymentOutboxJpaRepository.findById(sentMessage.getId()).orElseThrow();
+        assertThat(updatedMessage.getStatus()).isEqualTo("PUBLISHED");
     }
 }
