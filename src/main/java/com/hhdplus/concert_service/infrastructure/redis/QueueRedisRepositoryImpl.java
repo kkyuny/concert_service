@@ -1,6 +1,9 @@
 package com.hhdplus.concert_service.infrastructure.redis;
 
+import com.hhdplus.concert_service.business.service.ConcertService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -13,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class QueueRedisRepositoryImpl implements com.hhdplus.concert_service.business.repository.QueueRedisRepository {
+    static Logger LOGGER = LoggerFactory.getLogger(QueueRedisRepositoryImpl.class);
+
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String QUEUE = "queue";
@@ -110,6 +115,7 @@ public class QueueRedisRepositoryImpl implements com.hhdplus.concert_service.bus
         }
 
         activateAndRemoveTokens(zSetOps, setOps, tokens);
+        LOGGER.info("tokens activate by batch");
     }
 
     private int getCurrentActiveTokenCount(SetOperations<String, String> setOps) {
@@ -153,6 +159,7 @@ public class QueueRedisRepositoryImpl implements com.hhdplus.concert_service.bus
                 setOps.remove(ACTIVE_TOKEN, tokenWithTime);
             }
         });
+        LOGGER.info("tokens expired by batch");
     }
 
     private long extractTimestampFromToken(String tokenWithTime) {

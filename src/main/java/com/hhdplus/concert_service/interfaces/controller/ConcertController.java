@@ -7,7 +7,10 @@ import com.hhdplus.concert_service.interfaces.dto.response.ConcertResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("api/concert")
@@ -25,8 +28,10 @@ public class ConcertController {
 
     @GetMapping("/findSeats")
     @Operation(summary = "예약가능 좌석 조회")
-    public ConcertResponseDto getAvailableSeats(@RequestBody ConcertRequestDto dto) {
-        return ConcertResponseDto.toResponse(concertFacade.getAvailableSeats(ConcertFacadeDto.toFacadeDto(dto)));
+    public ConcertResponseDto getAvailableSeats(
+            @RequestParam("concertId") Long concertId,
+            @RequestParam("concertDate") LocalDateTime concertDate) {
+        return ConcertResponseDto.toResponse(concertFacade.getAvailableSeats(concertId, concertDate));
     }
 
     @PostMapping("/reserve")

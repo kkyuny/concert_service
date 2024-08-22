@@ -34,10 +34,7 @@ public class ConcertFacade {
     }
 
     // 예약 가능한 좌석 조회
-    public ConcertFacadeDto getAvailableSeats(ConcertFacadeDto dto) {
-        Long concertId = dto.getConcertId();
-        LocalDateTime concertDate = dto.getConcertDate();
-
+    public ConcertFacadeDto getAvailableSeats(Long concertId, LocalDateTime concertDate) {
         // 예약안된 좌석 번호 목록
         List<Long> availableSeats = concertService.findReservedSeats(concertId, concertDate);
 

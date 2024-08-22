@@ -12,12 +12,12 @@ public class QueueScheduler {
     @Autowired
     QueueFacade queueFacade;
 
-    @Scheduled(fixedDelay = 5 * 1000)
+    @Scheduled(fixedDelay = 20 * 1000)
     public void activateTokens() {
         queueFacade.activateTokens();
     }
 
-    @Scheduled(fixedDelay = 10 * 1000)
+    @Scheduled(fixedDelay = 30 * 1000)
     public void expireTokens() {
         queueFacade.expireTokens();
     }
