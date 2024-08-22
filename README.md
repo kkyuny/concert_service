@@ -65,8 +65,9 @@
    }
    ```
  - 테스트 결과
- 
-   ![image](https://github.com/user-attachments/assets/cf6dc458-a2ac-4a21-b89c-605712703cf9)
+   ![image](https://github.com/user-attachments/assets/1846f52a-53ae-483a-b070-6d7732042321)
+
+   
 
  1. 현재 내 대기순번 조회
   - 이유: 콘서트 예약 시 다수의 사용자가 대기 상태를 확인하기 위해서 수 많은 요청이 있을 수 있을 것이라고 생각<br>
