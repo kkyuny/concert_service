@@ -1,5 +1,62 @@
 ## Step 19
-현재 시나리오에서 인덱스가 필요하다고 판단한 쿼리
+1. 선정 부하 테스트
+ - 선정 테스트: 토큰 발급 및 현재 나의 대기 번호 조회
+ - 선정 사유: 특정한 인기콘서트 예매 시 토큰 발급 및 대기 번호 조회 요청이 많이 몰릴 것이라고 생각해보았습니다.
+ - 테스트 시나리오: 10000명의 유저가 토큰 발급 후 대기 번호 조회를 각 10번씩 요청한다.
+   ```
+   export function queue_test() {    
+    let userId = randomIntBetween(1, 50);
+
+    // 토큰 발급 요청
+    let token = create_token(userId);
+    // 대기열 조회 요청
+    check_queue_order(token);
+   }
+   
+   function create_token(userId) {
+       let createRequest =
+           {
+               userId: userId
+           }
+   
+       // POST 요청 보내기
+       let createToken = http.post(
+           `http://localhost:8080/api/token/create`,
+           JSON.stringify(createRequest),
+           {   
+               headers: {'Content-Type': 'application/json'},
+               tags: {name: 'create token'}
+           }
+       )
+   
+       // 요청이 성공했는지 확인
+       check(createToken, {'is status 200': (r) => r.status === 200});
+   
+       let jsonResponse = createToken.json();
+       // console.log('API Response:', jsonResponse);
+   
+       return jsonResponse.token
+   }
+   
+   function check_queue_order(token) {
+       // GET 요청 보내기
+       let checkResponse = http.get(
+           `http://localhost:8080/api/token/check`,
+           {
+               headers: {
+                   'authorization': token,  // 토큰을 헤더에 포함
+               },
+               tags: { name: 'check queue' }
+           }
+       );
+   
+       check(checkResponse, { 'is status 200': (r) => r.status === 200 });
+   }
+   ```
+ - 테스트 결과
+ - 
+   ![image](https://github.com/user-attachments/assets/cf6dc458-a2ac-4a21-b89c-605712703cf9)
+
  1. 현재 내 대기순번 조회
   - 이유: 콘서트 예약 시 다수의 사용자가 대기 상태를 확인하기 위해서 수 많은 요청이 있을 수 있을 것이라고 생각<br>
   - 인덱싱 전 실행결과
