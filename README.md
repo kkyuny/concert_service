@@ -6,14 +6,14 @@ Step 19 수행 후 각 시나리오에서 공통적으로 시도 횟수를 크�
   - 문제점
    1) 특정 사용자(약 120명)가 넘어갈 시 read: connection reset by peer 에러가 발생한다.
  
-      ```
-         queue_scenario: {
-             vus: 120, // 가상 사용자
-             exec: 'queue_test',
-             executor: 'per-vu-iterations', // 각각의 가상 사용자들이 정확한 반복 횟수만큼 실행
-             iterations: 10
-         }
-      ```
+    ```
+       queue_scenario: {
+           vus: 120, // 가상 사용자
+           exec: 'queue_test',
+           executor: 'per-vu-iterations', // 각각의 가상 사용자들이 정확한 반복 횟수만큼 실행
+           iterations: 10
+       }
+    ```
           
      
     ![image](https://github.com/user-attachments/assets/53bfbe55-6f63-4a84-ae25-23375ad1982a)
