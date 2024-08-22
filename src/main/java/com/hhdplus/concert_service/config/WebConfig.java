@@ -1,17 +1,21 @@
 package com.hhdplus.concert_service.config;
 
 import com.hhdplus.concert_service.interfaces.common.TokenInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+    private final TokenInterceptor tokenInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenInterceptor())
+        registry.addInterceptor(tokenInterceptor)
                 //.addPathPatterns("/**");
-                .excludePathPatterns("/api/charge/**");
+                .excludePathPatterns("/api/token/create")
+                .excludePathPatterns("/api/concert/findSeats");
     }
 }

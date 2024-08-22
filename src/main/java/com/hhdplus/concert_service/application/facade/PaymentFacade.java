@@ -7,23 +7,16 @@ import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.domain.UserDomain;
 import com.hhdplus.concert_service.business.event.PaymentEvent;
 import com.hhdplus.concert_service.business.event.PaymentEventPublisher;
-import com.hhdplus.concert_service.business.message.PaymentMessage;
 import com.hhdplus.concert_service.business.message.PaymentMessageOutboxWriter;
-import com.hhdplus.concert_service.business.message.PaymentMessageSender;
 import com.hhdplus.concert_service.business.service.*;
-import com.hhdplus.concert_service.infrastructure.entity.ConcertReservation;
-import com.hhdplus.concert_service.infrastructure.entity.PaymentOutbox;
-import com.hhdplus.concert_service.infrastructure.repository.PaymentOutboxJpaRepository;
 import com.hhdplus.concert_service.interfaces.common.exception.BadRequestException;
 import com.hhdplus.concert_service.interfaces.common.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor

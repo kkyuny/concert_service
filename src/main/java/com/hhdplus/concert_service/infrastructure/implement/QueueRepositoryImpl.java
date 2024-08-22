@@ -2,14 +2,14 @@ package com.hhdplus.concert_service.infrastructure.implement;
 
 import com.hhdplus.concert_service.business.domain.QueueDomain;
 import com.hhdplus.concert_service.business.repository.QueueRepository;
-import com.hhdplus.concert_service.infrastructure.redis.QueueRedisRepository;
+import com.hhdplus.concert_service.infrastructure.redis.QueueRedisRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class QueueRepositoryImpl implements QueueRepository {
-    private final QueueRedisRepository redisRepository;
+    private final QueueRedisRepositoryImpl redisRepository;
 
     @Override
     public void save(QueueDomain queue) {

@@ -1,6 +1,5 @@
 package com.hhdplus.concert_service.infrastructure.redis;
 
-import com.hhdplus.concert_service.business.repository.QueueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,10 +8,11 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class QueueRedisRepository implements com.hhdplus.concert_service.business.repository.QueueRedisRepository {
+public class QueueRedisRepositoryImpl implements com.hhdplus.concert_service.business.repository.QueueRedisRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String QUEUE = "queue";
@@ -27,7 +27,68 @@ public class QueueRedisRepository implements com.hhdplus.concert_service.busines
 
     // 대기열 순서 조회
     public Long getQueueOrder(String token) {
+        Boolean isActive = redisTemplate.opsForSet().isMember(ACTIVE_TOKEN, token);
+
+        if (isActive != null && isActive) {
+            return 0L; // 활성화된 토큰이면 0을 반환
+        }
+
         return redisTemplate.opsForZSet().rank(QUEUE, token);
+    }
+
+    public Boolean isTokenInQueueOrActive(String token) {
+        // 토큰이 활성화된 상태인지 확인
+        Boolean isActive = redisTemplate.opsForSet().isMember(ACTIVE_TOKEN, token);
+        if (isActive != null && isActive) {
+            return true; // 토큰이 활성화된 상태임
+        }
+
+        // 토큰이 대기열에 있는지 확인
+        Long rank = redisTemplate.opsForZSet().rank(QUEUE, token);
+        return rank != null; // rank가 null이 아니면 대기열에 존재하는 것임
+    }
+
+    public Boolean validateAndActivateToken(String token) {
+        // 토큰이 이미 활성화되었는지 확인
+        if (isTokenActive(token)) {
+            return true;
+        }
+
+        // 토큰이 대기열에 있는지 확인
+        Long queueOrder = getQueueOrder(token);
+        if (queueOrder == null) {
+            return false;
+        }
+
+        ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+        SetOperations<String, String> setOps = redisTemplate.opsForSet();
+
+        // 현재 활성화된 토큰 수 확인
+        int currentActiveCount = getCurrentActiveTokenCount(setOps);
+        int tokensToActivate = MAX_QUEUE_SIZE - currentActiveCount;
+
+        // 활성화 가능한 상태인지 확인
+        if (tokensToActivate > 0) {
+            activateToken(token);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void activateToken(String token) {
+        // 활성화 로직 수행
+        addActiveToken(token);
+        removeTokenFromQueue(token);
+    }
+
+    private void addActiveToken(String token) {
+        redisTemplate.opsForSet().add(ACTIVE_TOKEN, formatTokenWithTimestamp(token));
+        redisTemplate.expire(ACTIVE_TOKEN, MAX_ACTIVE_MINUTES * 60, TimeUnit.SECONDS);
+    }
+
+    private void removeTokenFromQueue(String token) {
+        redisTemplate.opsForZSet().remove(QUEUE, token);
     }
 
     // 토큰 검증

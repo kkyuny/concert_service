@@ -17,13 +17,13 @@ public class ConcertController {
     @Autowired
     ConcertFacade concertFacade;
 
-    @GetMapping("/dates")
+    @GetMapping("/findDates")
     @Operation(summary = "예약가능 날짜 조회")
     public ConcertResponseDto getAvailableDates(@RequestBody ConcertRequestDto dto) {
         return ConcertResponseDto.toResponse(concertFacade.getAvailableDates(ConcertFacadeDto.toFacadeDto(dto)));
     }
 
-    @GetMapping("/seats")
+    @GetMapping("/findSeats")
     @Operation(summary = "예약가능 좌석 조회")
     public ConcertResponseDto getAvailableSeats(@RequestBody ConcertRequestDto dto) {
         return ConcertResponseDto.toResponse(concertFacade.getAvailableSeats(ConcertFacadeDto.toFacadeDto(dto)));

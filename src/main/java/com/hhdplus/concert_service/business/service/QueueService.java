@@ -30,6 +30,7 @@ public class QueueService {
 
         try {
             queueRepository.save(queue);
+            LOGGER.info("token create success: " + queue.getToken());
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LOGGER.error("token create error", e);

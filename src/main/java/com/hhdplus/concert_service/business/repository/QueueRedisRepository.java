@@ -8,4 +8,6 @@ public interface QueueRedisRepository {
     void activateTokens();
     void expireToken(String token);
     void expireTokens();
+    Boolean validateAndActivateToken(String token);
+    Boolean isTokenInQueueOrActive(String token);
 }

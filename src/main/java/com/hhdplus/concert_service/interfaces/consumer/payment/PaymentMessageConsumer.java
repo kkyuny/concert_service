@@ -17,8 +17,6 @@ public class PaymentMessageConsumer {
     @Autowired
     ObjectMapper objectMapper;
 
-    private final ExternalSender externalSender;
-
     private final PaymentMessageOutboxWriter paymentMessageOutboxWriter;
 
     @KafkaListener(topics = "Payment", groupId = "group_1")
@@ -29,6 +27,6 @@ public class PaymentMessageConsumer {
         paymentMessageOutboxWriter.complete(paymentMessage);
 
         // 외부 발송 처리
-        externalSender.sendPaymentResult(paymentMessage);
+        ExternalSender.sendPaymentResult(paymentMessage);
     }
 }

@@ -2,6 +2,7 @@ package com.hhdplus.concert_service.interfaces.controller;
 
 import com.hhdplus.concert_service.application.dto.QueueFacadeDto;
 import com.hhdplus.concert_service.application.facade.QueueFacade;
+import com.hhdplus.concert_service.application.facade.QueueRedisFacade;
 import com.hhdplus.concert_service.interfaces.dto.request.QueueRequestDto;
 import com.hhdplus.concert_service.interfaces.dto.response.QueueResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,10 +20,13 @@ public class QueueController {
     @Autowired
     QueueFacade queueFacade;
 
+    @Autowired
+    QueueRedisFacade queueRedisFacade;
+
     @PostMapping("/create")
     @Operation(summary = "토큰 생성")
     public QueueResponseDto createToken(@RequestBody QueueRequestDto dto) {
-        return QueueResponseDto.toResponse(queueFacade.createToken(QueueFacadeDto.toFacadeDto(dto)));
+        return QueueResponseDto.toResponse(queueRedisFacade.createToken(QueueFacadeDto.toFacadeDto(dto)));
     }
 
     @GetMapping("/check")
@@ -30,6 +34,6 @@ public class QueueController {
     public QueueResponseDto checkQueue(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader("authorization");
 
-        return QueueResponseDto.toResponse(queueFacade.getQueueOrder(token));
+        return QueueResponseDto.toResponse(queueRedisFacade.getQueueOrder(token));
     }
 }
