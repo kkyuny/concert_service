@@ -14,7 +14,7 @@ Step 19 수행 후 각 시나리오에서 공통적으로 시도 횟수를 크�
        }
    ```     
      
-     ![image](https://github.com/user-attachments/assets/53bfbe55-6f63-4a84-ae25-23375ad1982a)
+  ![image](https://github.com/user-attachments/assets/53bfbe55-6f63-4a84-ae25-23375ad1982a)
      
      -> 사용자가 120명을 초과하는 테스트를 수행 시 해당 에러가 발생한다. 
    
