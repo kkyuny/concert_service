@@ -5,18 +5,17 @@ Step 19 수행 후 각 시나리오에서 공통적으로 시도 횟수를 크�
  1. 시도 횟수를 크게 늘렸을 때 실패확률이 생기는 문제
   - 문제점
    1) 특정 사용자(약 120명)가 넘어갈 시 read: connection reset by peer 에러가 발생한다.
- 
-    ```
+   ```
        queue_scenario: {
            vus: 120, // 가상 사용자
            exec: 'queue_test',
            executor: 'per-vu-iterations', // 각각의 가상 사용자들이 정확한 반복 횟수만큼 실행
            iterations: 10
        }
-    ```
-          
+   ```     
      
      ![image](https://github.com/user-attachments/assets/53bfbe55-6f63-4a84-ae25-23375ad1982a)
+     
      -> 사용자가 120명을 초과하는 테스트를 수행 시 해당 에러가 발생한다. 
    
   - 추정한 발생원인: read: connection reset by peer에는 여러가지 원인이 있지만 서버로의 요청이 제대로 이루어지지 않은 경우라고 
