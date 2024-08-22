@@ -68,11 +68,11 @@
   
    ![image](https://github.com/user-attachments/assets/1846f52a-53ae-483a-b070-6d7732042321)
 
-   -> 성공률 94.58%, 실행시간 1분 20초
  - 테스트 결과(그라파나)
    
-  ![image](https://github.com/user-attachments/assets/d822fdaf-b9a6-46a0-b67c-dca077233313)
-
+   ![image](https://github.com/user-attachments/assets/d822fdaf-b9a6-46a0-b67c-dca077233313)
+   -> 테스트 실행결과: 성공률 94.58%, 실행시간 1분 20초
+   -> 특이한 점은 그라파나의 Virtual Users, Requests per Second를 보면 요청이 어느정도 수행되다가 처리하는 성능이 급격히 낮아졌다.
 
  1. 현재 내 대기순번 조회
   - 이유: 콘서트 예약 시 다수의 사용자가 대기 상태를 확인하기 위해서 수 많은 요청이 있을 수 있을 것이라고 생각<br>
