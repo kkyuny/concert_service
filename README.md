@@ -79,6 +79,42 @@
 
  
  2. 특정 콘서트의 예약가능한 좌석 조회 
+  - 선정 사유: 특정한 인기콘서트 예매 시 예약가능한 좌석조회 요청을 많이 시도할 것이라고 생각해보았습니다.
+  - 테스트 시나리오: 10000명의 유저가 특정한 콘서트에 대해 예약가능한 좌석조회 요청을 각 5번씩 요청한다.
+    ```
+    export let options = {
+        scenarios: {
+            order_scenario: {
+                vus: 10000, // 가상 사용자
+                exec: 'concert_test',
+                executor: 'per-vu-iterations', // 각각의 가상 사용자들이 정확한 반복 횟수만큼 실행
+                iterations: 5
+            }
+        }
+    };
+    
+    export function concert_test() {   
+        find_availabled_seats()
+    }
+    
+    function find_availabled_seats() {
+        // GET 요청 보내기
+        let findSeatsResponse = http.get(
+            `http://localhost:8080/api/concert/findSeats?concertId=1&concertDate=2024-09-15T20:00:00`,
+            {
+                headers: {
+                    'authorization': "testToken",
+                },
+                tags: { name: 'find seats' }
+                }
+            );
+        check(findSeatsResponse, { 'is status 200': (r) => r.status === 200 });
+        }
+    }
+    ```
+  - 테스트 결과(K6)
+   
+   ![image](https://github.com/user-attachments/assets/b921b794-60d6-455c-b37b-e2daca261b49)
 
 
 
