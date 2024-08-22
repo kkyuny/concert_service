@@ -49,7 +49,7 @@ Step 19 수행 후 각 시나리오에서 공통적으로 시도 횟수를 크�
       ![image](https://github.com/user-attachments/assets/43f760df-3c8c-418a-9877-32fccb23e7ff)
 
       -> 요청의 처리 수가 일정하며, 전체 수행시간은 7초가 걸리고 성공률로 98%로 높은 편이라고 생각한다.
-     - 10000명이 5번씩 수행 시 결과
+      - 10000명이 5번씩 수행 시 결과
 
       ![image](https://github.com/user-attachments/assets/6b5cac1a-59ca-4f5a-b008-da3fa638bf46)
 
