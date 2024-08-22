@@ -42,7 +42,7 @@ public class ConcertService {
 
         LOGGER.info("find Seats complete: " + reservedSeats);
 
-        // 좌석 번호 1~50 중 예약되지 않은 좌석 번호 반환
+        // 좌석 번호 1~50 중 예약되지 않은 좌석 번호 반환.
         return LongStream.rangeClosed(1, 50)
                 .filter(seatNo -> !reservedSeats.contains(seatNo))
                 .boxed()
