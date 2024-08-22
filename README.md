@@ -2,15 +2,26 @@
 1. 선정 부하 테스트
  - 선정 테스트: 토큰 발급 및 현재 나의 대기 번호 조회
  - 선정 사유: 특정한 인기콘서트 예매 시 토큰 발급 및 대기 번호 조회 요청이 많이 몰릴 것이라고 생각해보았습니다.
- - 테스트 시나리오: 10000명의 유저가 토큰 발급 후 대기 번호 조회를 각 10번씩 요청한다.
+ - 테스트 시나리오: 10000명의 유저가 토큰 발급 후 대기 번호 조회를 각 5번씩 요청한다.
    ```
-   export function queue_test() {    
-    let userId = randomIntBetween(1, 50);
+   export let options = {
+      scenarios: {
+          order_scenario: {
+              vus: 10000, // 가상 사용자
+              exec: 'queue_test',
+              executor: 'per-vu-iterations', // 각각의 가상 사용자들이 정확한 반복 횟수만큼 실행
+              iterations: 5
+          }
+      }
+   };
 
-    // 토큰 발급 요청
-    let token = create_token(userId);
-    // 대기열 조회 요청
-    check_queue_order(token);
+   export function queue_test() {    
+       let userId = randomIntBetween(1, 50);
+   
+       // 토큰 발급 요청
+       let token = create_token(userId);
+       // 대기열 조회 요청
+       check_queue_order(token);
    }
    
    function create_token(userId) {
@@ -54,7 +65,7 @@
    }
    ```
  - 테스트 결과
- - 
+ 
    ![image](https://github.com/user-attachments/assets/cf6dc458-a2ac-4a21-b89c-605712703cf9)
 
  1. 현재 내 대기순번 조회
