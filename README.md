@@ -14,9 +14,9 @@ Step 19 수행 후 각 시나리오에서 공통적으로 시도 횟수를 크�
             iterations: 10
         }
      ```
-     
-    
+         
     ![image](https://github.com/user-attachments/assets/53bfbe55-6f63-4a84-ae25-23375ad1982a)
+    
     -> 사용자가 120명을 초과하는 테스트를 수행 시 해당 에러가 발생한다. 
     
     - 추정한 발생원인: read: connection reset by peer에는 여러가지 원인이 있지만 서버로의 요청이 제대로 이루어지지 않은 경우라고 
