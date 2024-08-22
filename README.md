@@ -7,10 +7,10 @@
    export let options = {
       scenarios: {
           order_scenario: {
-              vus: 10000, // 가상 사용자
+              vus: 10000, // 가상 사용자 수
               exec: 'queue_test',
               executor: 'per-vu-iterations', // 각각의 가상 사용자들이 정확한 반복 횟수만큼 실행
-              iterations: 5
+              iterations: 5 // 반복 횟수
           }
       }
    };
